@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "Parser.h"
+#include "include/Parser.h"
 
 void processAllocation(const std::string& rangesFile, const std::string& registersFile, const std::string& outputFile) {
     std::cout << "\n--- Iniciando Processamento ---" << std::endl;
