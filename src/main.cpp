@@ -1,23 +1,34 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include "include/Parser.h"
 
-// Funções de simulação das próximas fases (T1.2 e T2)
 void processAllocation(const std::string& rangesFile, const std::string& registersFile, const std::string& outputFile) {
-    // TODO: T1.2 - Ligar ao Parser para ler rangesFile e registersFile
-    // TODO: T2 - Construir o Grafo e correr o Allocator
-    // TODO: T1.1 - Escrever o resultado no outputFile
+    std::cout << "\n--- Iniciando Processamento ---" << std::endl;
     
-    std::cout << "A processar alocação..." << std::endl;
-    std::cout << "- Ranges: " << rangesFile << std::endl;
-    std::cout << "- Registos: " << registersFile << std::endl;
-    std::cout << "- Output: " << outputFile << std::endl;
+    // T1.2: Ler as configurações (Registers)
+    std::cout << "[1] A ler configuracoes de: " << registersFile << std::endl;
+    Config config = Parser::parseRegisters(registersFile);
+    
+    std::cout << "    -> Registos disponiveis: " << config.numRegisters << std::endl;
+    std::cout << "    -> Algoritmo escolhido: " << config.algorithmType 
+              << " (Parametro: " << config.algorithmParam << ")" << std::endl;
+
+    // T1.2: Ler os Live Ranges e Construir o Grafo
+    std::cout << "[2] A ler Live Ranges e a construir o Grafo de Interferencias de: " << rangesFile << std::endl;
+    Graph<Web> interferenceGraph = Parser::parseRangesAndBuildGraph(rangesFile);
+    
+    std::cout << "    -> Sucesso! Grafo construido com " << interferenceGraph.getNumVertex() << " Webs (variaveis)." << std::endl;
+
+    // TODO: T2 - Construir e correr a classe Allocator (usando config e interferenceGraph)
+    // TODO: T1.1/T3 - Escrever o resultado final no outputFile
+    
+    std::cout << "\n(Fase T1.2 Concluida! O Grafo esta pronto para colorir na proxima fase.)\n" << std::endl;
 }
 
 
 int runBatchMode(int argc, char* argv[]) {
-   if (argc != 5) {
-        
+    if (argc != 5) {
         std::cerr << "Erro: Numero incorreto de argumentos no modo batch." << std::endl;
         std::cerr << "Uso correto: " << argv[0] << " -b <ranges.txt> <registers.txt> <allocation.txt>" << std::endl;
         return 1;
@@ -62,11 +73,11 @@ int runInteractiveMode() {
 
         switch (choice) {
             case 1:
-                std::cout << "\nIntroduza o caminho para o ficheiro de Live Ranges (ex: data/ranges.txt): ";
+                std::cout << "\nIntroduza o caminho para o ficheiro de Live Ranges (ex: data/ranges/ranges1.txt): ";
                 std::cin >> rangesFile;
-                std::cout << "Introduza o caminho para o ficheiro de Registos (ex: data/registers.txt): ";
+                std::cout << "Introduza o caminho para o ficheiro de Registos (ex: data/registers/registers1.txt): ";
                 std::cin >> registersFile;
-                std::cout << "Introduza o caminho para o ficheiro de Output (ex: alloc.txt): ";
+                std::cout << "Introduza o caminho para o ficheiro de Output (ex: data/output/test.txt): ";
                 std::cin >> outputFile;
                 
                 try {
@@ -86,7 +97,7 @@ int runInteractiveMode() {
 }
 
 int main(int argc, char* argv[]) {
-     if (argc > 1) {
+    if (argc > 1) {
         std::string flag = argv[1];
         if (flag == "-b") {
             return runBatchMode(argc, argv);
