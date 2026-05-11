@@ -15,28 +15,27 @@
 struct AllocationResult {
     bool success = false;          ///< true if all webs were assigned a register
     int registersUsed = 0;         ///< number of distinct registers actually used
+    int websSpilled = 0;           ///< number of webs sent to memory
     std::vector<Web> webs;         ///< final webs with assignedRegister filled in
 };
 
 /**
  * @brief Performs register allocation through graph coloring.
  *
- * Implements the greedy simplification + coloring algorithm (T2.1 - basic):
+ * Supports two modes:
  *
- *  Phase 1 – Simplification:
- *    Repeatedly remove nodes whose degree < K (the number of available
- *    registers) and push them onto a stack.  If all remaining nodes have
- *    degree >= K, one node is selected as a *spill candidate* (no register
- *    will be assigned to it) and removed so the loop can continue.
+ *  T2.1 – allocate():
+ *    Basic greedy simplification + coloring with K colors.
+ *    If the graph cannot be colored without spilling, spilled nodes receive
+ *    NO_REGISTER and success is set to false.
  *
- *  Phase 2 – Coloring:
- *    Pop nodes from the stack and assign the lowest-numbered color (register)
- *    not already used by any of its neighbours in the *original* graph.
- *    Because every pushed node had degree < K when it was removed, a valid
- *    color will always exist for it.  Spilled nodes receive NO_REGISTER.
+ *  T2.2 – allocateWithSpilling(maxSpills):
+ *    Tries the basic algorithm first. If it fails, explicitly pre-spills the
+ *    highest-degree web and retries. Repeats until coloring succeeds or
+ *    maxSpills is exhausted.
  *
- * Time complexity: O(V^2 + E) per coloring attempt, where V = number of webs
- * and E = number of interference edges.
+ * Time complexity: O(V^2 + E) for basic; O(S * (V^2 + E)) for spilling mode,
+ * where S = maxSpills, V = number of webs, E = number of interference edges.
  */
 class Allocator {
 public:
@@ -50,13 +49,31 @@ public:
     /**
      * @brief Runs the basic greedy graph-coloring register allocation (T2.1).
      *
-     * Tries to color the interference graph with at most `numRegisters_` colors.
-     * If the graph cannot be colored without spilling the allocation is still
+     * Tries to color the interference graph with at most numRegisters_ colors.
+     * If the graph cannot be colored without spilling, the allocation is still
      * attempted: spilled webs receive NO_REGISTER and success is set to false.
      *
      * @return AllocationResult with the coloring outcome.
      */
     AllocationResult allocate();
+
+    /**
+     * @brief Runs register allocation with controlled web spilling (T2.2).
+     *
+     * First attempts basic coloring with no forced spills. If it fails,
+     * iteratively pre-spills the highest-degree web (maximum interference
+     * removal per spill) and retries, up to maxSpills times total.
+     * Returns as soon as coloring succeeds (minimum spills used).
+     * If maxSpills is exhausted, returns the last attempted result.
+     *
+     * Rationale for highest-degree selection: removing the most connected node
+     * reduces the maximum clique size the most, giving the best chance of
+     * making the remaining graph K-colorable with a single spill.
+     *
+     * @param maxSpills Maximum number of webs allowed to be pre-spilled.
+     * @return AllocationResult with the coloring outcome.
+     */
+    AllocationResult allocateWithSpilling(int maxSpills);
 
 private:
     // ------------------------------------------------------------------ data
@@ -66,32 +83,46 @@ private:
     // ------------------------------------------------------------------ helpers
 
     /**
-     * @brief Returns the current effective degree of a vertex in the working
-     *        graph, ignoring vertices that have already been removed/disabled.
+     * @brief Core coloring engine used by both public methods.
+     *
+     * Runs the simplification + coloring loop. Webs in forcedSpills are
+     * removed from the working graph before simplification begins so they
+     * never consume a register slot. Any additional webs that cannot be
+     * simplified without spilling are also marked NO_REGISTER.
+     *
+     * @param forcedSpills Set of web ids that must be spilled regardless.
+     * @return AllocationResult with the coloring outcome.
+     */
+    AllocationResult runColoring(const std::set<int>& forcedSpills) const;
+
+    /**
+     * @brief Returns the effective degree of a vertex in the working graph,
+     *        ignoring vertices that have already been removed.
      * @param v       The vertex to query.
-     * @param removed Set of web ids that have been removed from the working graph.
+     * @param removed Set of web ids removed from the working graph.
      */
     int effectiveDegree(Vertex<Web>* v, const std::set<int>& removed) const;
 
     /**
-     * @brief Selects the best spill candidate from the vertices still active
-     *        in the working graph (those not in `removed`).
+     * @brief Selects the best spill candidate among active vertices.
      *
-     * Strategy: pick the node with the highest effective degree, as removing
-     * it reduces interference the most and gives the best chance of coloring
-     * the remainder of the graph.
+     * Picks the node with the highest effective degree. Ties broken by web id
+     * for determinism.
      *
      * @param removed Set of web ids already removed from the working graph.
-     * @return Pointer to the chosen spill-candidate vertex.
+     * @return Pointer to the chosen vertex, or nullptr if none remain.
      */
     Vertex<Web>* chooseSpillCandidate(const std::set<int>& removed) const;
 
     /**
-     * @brief Assigns the lowest available color (register index) to a vertex,
-     *        considering the colors already used by its neighbours.
+     * @brief Assigns the lowest available color to a vertex.
+     *
+     * Scans neighbour colors in the original graph and returns the first
+     * color in [0, numRegisters_) not already used by a neighbour.
+     *
      * @param v       The vertex to color.
-     * @param colors  Map from web id → assigned register (built incrementally).
-     * @return The register index assigned, or NO_REGISTER if none was available.
+     * @param colors  Map from web id to assigned register (built incrementally).
+     * @return The register index assigned, or NO_REGISTER if none available.
      */
     int assignColor(Vertex<Web>* v, const std::map<int, int>& colors) const;
 };
