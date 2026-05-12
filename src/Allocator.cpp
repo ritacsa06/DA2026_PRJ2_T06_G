@@ -4,6 +4,7 @@
 #include <set>
 #include <stack>
 #include <algorithm>
+#include <climits>
 
 // ---------------------------------------------------------------------------
 // Constructor
@@ -62,7 +63,7 @@ AllocationResult Allocator::allocateWithSpilling(int maxSpills) {
         }
 
         // Success: coloring worked with no unexpected spills — stop early
-        if (result.success) {
+        if (result.websSpilled == static_cast<int>(forcedSpills.size())) {
             std::cout << "    [Spilling] Coloracao bem-sucedida com "
                       << static_cast<int>(forcedSpills.size())
                       << " web(s) derramada(s) para memoria." << std::endl;
