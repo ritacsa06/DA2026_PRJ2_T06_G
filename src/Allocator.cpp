@@ -4,7 +4,6 @@
 #include <set>
 #include <stack>
 #include <algorithm>
-#include <limits>
 
 // ---------------------------------------------------------------------------
 // Constructor
@@ -14,40 +13,128 @@ Allocator::Allocator(const Graph<Web>& graph, int numRegs)
     : graph_(graph), numRegisters_(numRegs) {}
 
 // ---------------------------------------------------------------------------
-// Public: allocate()
+// Public: allocate()  [T2.1 - basic]
+// Delegates directly to runColoring with no forced spills.
 // ---------------------------------------------------------------------------
 
 AllocationResult Allocator::allocate() {
-    AllocationResult result;
+    return runColoring({});
+}
 
-    // Collect all vertices from the original graph
+// ---------------------------------------------------------------------------
+// Public: allocateWithSpilling()  [T2.2 - spilling]
+//
+// Strategy:
+//   Start with no forced spills. If coloring fails (the basic algorithm
+//   was forced to spill internally), explicitly pre-spill the highest-degree
+//   web and retry. Repeat until success or maxSpills exhausted.
+//
+//   We always pick the highest-degree web as the next spill candidate because
+//   it carries the most interference edges. Removing it from the graph reduces
+//   the maximum clique size the most, giving the remaining webs the best
+//   chance of being K-colorable with one fewer node.
+//
+//   We track the "best" result seen so far (fewest internal spills) so that
+//   if we exhaust maxSpills without a clean success we still return something
+//   meaningful.
+// ---------------------------------------------------------------------------
+
+AllocationResult Allocator::allocateWithSpilling(int maxSpills) {
+
+    // Guard: if graph is empty just return success immediately
+    if (graph_.getVertexSet().empty()) {
+        AllocationResult r;
+        r.success = true;
+        return r;
+    }
+
+    std::set<int>    forcedSpills;   // web ids pre-committed to memory
+    AllocationResult bestResult;     // best result seen across all attempts
+    bestResult.websSpilled = INT_MAX;
+
+    for (int attempt = 0; attempt <= maxSpills; ++attempt) {
+
+        AllocationResult result = runColoring(forcedSpills);
+
+        // Track best (fewest total spills)
+        if (result.websSpilled < bestResult.websSpilled) {
+            bestResult = result;
+        }
+
+        // Success: coloring worked with no unexpected spills — stop early
+        if (result.success) {
+            std::cout << "    [Spilling] Coloracao bem-sucedida com "
+                      << static_cast<int>(forcedSpills.size())
+                      << " web(s) derramada(s) para memoria." << std::endl;
+            return result;
+        }
+
+        // Coloring failed — choose the next web to pre-spill
+        if (attempt < maxSpills) {
+            // Build removed set = currently forced spills (already out of graph)
+            Vertex<Web>* candidate = chooseSpillCandidate(forcedSpills);
+            if (candidate == nullptr) break; // no more nodes to spill
+
+            int cid = candidate->getInfo().id;
+            forcedSpills.insert(cid);
+
+            std::cout << "    [Spilling] Tentativa " << (attempt + 1)
+                      << ": a derramar web id=" << cid
+                      << " (variavel: " << candidate->getInfo().variableName
+                      << ", grau=" << effectiveDegree(candidate, forcedSpills) + 1
+                      << ") e a tentar novamente..." << std::endl;
+        }
+    }
+
+    // Exhausted maxSpills — return best result found
+    std::cerr << "\n[AVISO] Nao foi possivel colorir o grafo com "
+              << numRegisters_ << " registos e no maximo "
+              << maxSpills << " web(s) derramada(s).\n"
+              << "        " << bestResult.websSpilled
+              << " web(s) enviada(s) para memoria no melhor resultado.\n";
+
+    return bestResult;
+}
+
+// ---------------------------------------------------------------------------
+// Private: runColoring()
+//
+// Core engine used by both public methods.
+//
+// Phase 1 – Simplification:
+//   forcedSpills are removed immediately (they never compete for a register).
+//   Then we repeatedly remove nodes with effective degree < K onto a stack.
+//   If stuck (all remaining have degree >= K) we pick another spill candidate
+//   — this is an "unplanned" spill that counts against success.
+//
+// Phase 2 – Coloring:
+//   Pop the stack; assign the lowest color not used by any neighbour in the
+//   original graph. Forced/unplanned spills both receive NO_REGISTER.
+// ---------------------------------------------------------------------------
+
+AllocationResult Allocator::runColoring(const std::set<int>& forcedSpills) const {
+
+    AllocationResult result;
     std::vector<Vertex<Web>*> allVertices = graph_.getVertexSet();
 
     if (allVertices.empty()) {
         result.success = true;
-        result.registersUsed = 0;
         return result;
     }
 
-    // -----------------------------------------------------------------------
-    // Phase 1 – Simplification
-    //
-    // We simulate node removal using a "removed" set that tracks web ids of
-    // vertices that have been taken out of the working graph.
-    // Nodes with effective degree < K are pushed onto the coloring stack.
-    // If we get stuck (every remaining node has degree >= K) we spill the
-    // highest-degree node.
-    // -----------------------------------------------------------------------
-
-    std::set<int>       removed;       // web ids already pulled from working graph
-    std::stack<int>     colorStack;    // web ids to be colored (in pop order)
-    std::set<int>       spilledIds;    // web ids chosen for spilling
+    // "removed" tracks everything out of the working graph:
+    // starts with forcedSpills, grows as nodes are simplified or spilled.
+    std::set<int>   removed     = forcedSpills;  // already out of working graph
+    std::set<int>   spilledIds  = forcedSpills;  // all ids that get NO_REGISTER
+    std::stack<int> colorStack;                  // ids to color (in pop order)
 
     int totalNodes = static_cast<int>(allVertices.size());
 
+    // -----------------------------------------------------------------------
+    // Phase 1 – Simplification
+    // -----------------------------------------------------------------------
     while (static_cast<int>(removed.size()) < totalNodes) {
 
-        // Try to find any node with effective degree < numRegisters_
         bool foundSimplifiable = false;
 
         for (Vertex<Web>* v : allVertices) {
@@ -58,34 +145,28 @@ AllocationResult Allocator::allocate() {
                 removed.insert(wid);
                 colorStack.push(wid);
                 foundSimplifiable = true;
-                // Restart the scan: removing this node may lower others' degrees
-                break;
+                break; // restart scan — degrees may have changed
             }
         }
 
         if (!foundSimplifiable) {
-            // Every remaining active node has degree >= K → must spill one
+            // All remaining nodes have degree >= K: unplanned spill
             Vertex<Web>* spillVertex = chooseSpillCandidate(removed);
-            if (spillVertex == nullptr) break; // shouldn't happen
+            if (spillVertex == nullptr) break;
 
             int sid = spillVertex->getInfo().id;
             spilledIds.insert(sid);
             removed.insert(sid);
-            // Do NOT push onto colorStack – spilled nodes get no color
+            // Not pushed onto colorStack — no register assigned
         }
     }
 
     // -----------------------------------------------------------------------
     // Phase 2 – Coloring
-    //
-    // Pop nodes from the stack and greedily assign the lowest available color.
-    // Each node had degree < K when it was simplified, so a color always exists.
     // -----------------------------------------------------------------------
-
-    // colors: web id → register index (0-based)
     std::map<int, int> colors;
 
-    // Pre-mark spilled nodes so neighbours know they have no color
+    // Pre-mark all spilled nodes (forced + unplanned)
     for (int sid : spilledIds) {
         colors[sid] = NO_REGISTER;
     }
@@ -94,35 +175,28 @@ AllocationResult Allocator::allocate() {
         int wid = colorStack.top();
         colorStack.pop();
 
-        // Find the vertex with this id
         Vertex<Web>* v = nullptr;
         for (Vertex<Web>* candidate : allVertices) {
             if (candidate->getInfo().id == wid) { v = candidate; break; }
         }
         if (v == nullptr) continue;
 
-        int reg = assignColor(v, colors);
-        colors[wid] = reg;
+        colors[wid] = assignColor(v, colors);
     }
 
     // -----------------------------------------------------------------------
-    // Build the result: copy webs from graph, fill in assigned registers
+    // Build AllocationResult
     // -----------------------------------------------------------------------
-
-    int maxReg = -1;
-    bool anySpill = false;
+    int  maxReg    = -1;
+    int  spillCount = 0;
 
     for (Vertex<Web>* v : allVertices) {
         Web web = v->getInfo();
         auto it = colors.find(web.id);
-        if (it != colors.end()) {
-            web.assignedRegister = it->second;
-        } else {
-            web.assignedRegister = NO_REGISTER;
-        }
+        web.assignedRegister = (it != colors.end()) ? it->second : NO_REGISTER;
 
         if (web.assignedRegister == NO_REGISTER) {
-            anySpill = true;
+            ++spillCount;
         } else {
             maxReg = std::max(maxReg, web.assignedRegister);
         }
@@ -130,12 +204,12 @@ AllocationResult Allocator::allocate() {
         result.webs.push_back(web);
     }
 
-    // Sort webs by id for deterministic output
     std::sort(result.webs.begin(), result.webs.end(),
               [](const Web& a, const Web& b) { return a.id < b.id; });
 
-    result.success       = !anySpill;
+    result.success       = (spillCount == 0);
     result.registersUsed = (maxReg >= 0) ? (maxReg + 1) : 0;
+    result.websSpilled   = spillCount;
 
     return result;
 }
@@ -164,7 +238,9 @@ Vertex<Web>* Allocator::chooseSpillCandidate(const std::set<int>& removed) const
         if (removed.count(wid)) continue;
 
         int deg = effectiveDegree(v, removed);
-        if (deg > bestDeg) {
+        // Tie-break by web id for determinism
+        if (deg > bestDeg || (deg == bestDeg && best != nullptr &&
+                              v->getInfo().id < best->getInfo().id)) {
             bestDeg = deg;
             best    = v;
         }
@@ -173,7 +249,6 @@ Vertex<Web>* Allocator::chooseSpillCandidate(const std::set<int>& removed) const
 }
 
 int Allocator::assignColor(Vertex<Web>* v, const std::map<int, int>& colors) const {
-    // Collect colors already used by neighbours in the ORIGINAL graph
     std::set<int> usedColors;
 
     for (Edge<Web>* e : v->getAdj()) {
@@ -184,13 +259,12 @@ int Allocator::assignColor(Vertex<Web>* v, const std::map<int, int>& colors) con
         }
     }
 
-    // Return the lowest non-negative color not in usedColors
     for (int c = 0; c < numRegisters_; ++c) {
         if (!usedColors.count(c)) {
             return c;
         }
     }
 
-    // This should not happen for simplified nodes, but guard defensively
+    // Defensive fallback — should not occur for properly simplified nodes
     return NO_REGISTER;
 }

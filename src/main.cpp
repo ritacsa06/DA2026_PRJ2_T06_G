@@ -5,7 +5,9 @@
 #include "Allocator.h"
 #include "Writer.h"
 
-
+// ---------------------------------------------------------------------------
+// Core processing function
+// ---------------------------------------------------------------------------
 
 void processAllocation(const std::string& rangesFile,
                        const std::string& registersFile,
@@ -29,18 +31,36 @@ void processAllocation(const std::string& rangesFile,
     std::cout << "    -> Grafo construido com "
               << interferenceGraph.getNumVertex() << " Webs (variaveis)." << std::endl;
 
-    // T2.1 – Run the allocator
+    // T2.x – Run the allocator (dispatch by algorithm type)
     std::cout << "[3] A executar o algoritmo de alocacao de registos..." << std::endl;
 
     Allocator allocator(interferenceGraph, config.numRegisters);
-    AllocationResult result = allocator.allocate();
+    AllocationResult result;
+
+    if (config.algorithmType == "basic") {
+        // T2.1: basic greedy coloring, no controlled spilling
+        result = allocator.allocate();
+
+    } else if (config.algorithmType == "spilling") {
+        // T2.2: greedy coloring with up to K controlled web spills
+        int maxSpills = (config.algorithmParam > 0) ? config.algorithmParam : 1;
+        std::cout << "    -> Modo spilling: maximo de " << maxSpills
+                  << " web(s) permitida(s) para memoria." << std::endl;
+        result = allocator.allocateWithSpilling(maxSpills);
+
+    } else {
+        // Fallback to basic for unrecognised algorithm types
+        std::cerr << "    [AVISO] Algoritmo '" << config.algorithmType
+                  << "' nao reconhecido. A usar 'basic'." << std::endl;
+        result = allocator.allocate();
+    }
 
     if (result.success) {
         std::cout << "    -> Alocacao bem-sucedida! Registos utilizados: "
                   << result.registersUsed << std::endl;
     } else {
-        std::cout << "    -> Alocacao com spilling! Algumas webs foram enviadas para memoria."
-                  << std::endl;
+        std::cout << "    -> Alocacao com spilling! "
+                  << result.websSpilled << " web(s) enviada(s) para memoria." << std::endl;
     }
 
     // T1.1 – Write output file
@@ -50,7 +70,9 @@ void processAllocation(const std::string& rangesFile,
     std::cout << "\n(Processamento concluido!)\n" << std::endl;
 }
 
-
+// ---------------------------------------------------------------------------
+// Batch mode
+// ---------------------------------------------------------------------------
 
 int runBatchMode(int argc, char* argv[]) {
     if (argc != 5) {
@@ -74,7 +96,9 @@ int runBatchMode(int argc, char* argv[]) {
     return 0;
 }
 
-
+// ---------------------------------------------------------------------------
+// Interactive mode
+// ---------------------------------------------------------------------------
 
 void displayMenu() {
     std::cout << "\n=========================================\n";
@@ -129,6 +153,9 @@ int runInteractiveMode() {
     return 0;
 }
 
+// ---------------------------------------------------------------------------
+// Entry point
+// ---------------------------------------------------------------------------
 
 int main(int argc, char* argv[]) {
     if (argc > 1) {
