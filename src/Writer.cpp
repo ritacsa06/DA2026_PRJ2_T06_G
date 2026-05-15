@@ -7,9 +7,6 @@
 #include <vector>
 #include <algorithm>
 
-// ---------------------------------------------------------------------------
-// Public: write()
-// ---------------------------------------------------------------------------
 
 void Writer::write(const AllocationResult& result, const std::string& outputFile) {
 
@@ -27,9 +24,7 @@ void Writer::write(const AllocationResult& result, const std::string& outputFile
     const std::vector<Web>& webs = result.webs;
     int numWebs = static_cast<int>(webs.size());
 
-    // -----------------------------------------------------------------------
-    // Section 1: Webs listing
-    // -----------------------------------------------------------------------
+ 
     file << "# Total number of webs followed by the listing of the program points of each one\n";
     file << "# program points in each web are sorted in ascending order\n";
     file << "webs: " << numWebs << "\n";
@@ -38,9 +33,7 @@ void Writer::write(const AllocationResult& result, const std::string& outputFile
         file << "web" << i << ": " << formatWebPoints(webs[i]) << "\n";
     }
 
-    // -----------------------------------------------------------------------
-    // Section 2: Register assignment
-    // -----------------------------------------------------------------------
+  
     file << "# Total number of registers used, followed by assignment to webs\n";
     file << "registers: " << result.registersUsed << "\n";
 
@@ -73,10 +66,6 @@ void Writer::write(const AllocationResult& result, const std::string& outputFile
 
     std::cout << "[OK] Resultado escrito em: " << outputFile << std::endl;
 }
-
-// ---------------------------------------------------------------------------
-// Private: formatWebPoints()
-// ---------------------------------------------------------------------------
 
 std::string Writer::formatWebPoints(const Web& web) {
     std::ostringstream oss;

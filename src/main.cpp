@@ -5,10 +5,6 @@
 #include "Allocator.h"
 #include "Writer.h"
 
-// ---------------------------------------------------------------------------
-// Core processing function
-// ---------------------------------------------------------------------------
-
 void processAllocation(const std::string& rangesFile,
                        const std::string& registersFile,
                        const std::string& outputFile) {
@@ -70,10 +66,6 @@ void processAllocation(const std::string& rangesFile,
     std::cout << "\n(Processamento concluido!)\n" << std::endl;
 }
 
-// ---------------------------------------------------------------------------
-// Batch mode
-// ---------------------------------------------------------------------------
-
 int runBatchMode(int argc, char* argv[]) {
     if (argc != 5) {
         std::cerr << "Erro: Numero incorreto de argumentos no modo batch." << std::endl;
@@ -95,10 +87,6 @@ int runBatchMode(int argc, char* argv[]) {
 
     return 0;
 }
-
-// ---------------------------------------------------------------------------
-// Interactive mode
-// ---------------------------------------------------------------------------
 
 void displayMenu() {
     std::cout << "\n=========================================\n";
@@ -153,9 +141,6 @@ int runInteractiveMode() {
     return 0;
 }
 
-// ---------------------------------------------------------------------------
-// Entry point
-// ---------------------------------------------------------------------------
 
 int main(int argc, char* argv[]) {
     if (argc > 1) {
