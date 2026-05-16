@@ -7,13 +7,20 @@
 #include <vector>
 #include <algorithm>
 
-
 void Writer::write(const AllocationResult& result, const std::string& outputFile) {
+    
+  
+    AllocationResult finalResult = result;
 
-    // Warn to console if allocation was not fully successful
-    if (!result.success) {
+   
+    if (!finalResult.success) {
         std::cerr << "\n[AVISO] A alocacao de registos nao foi possivel com o numero de registos fornecido.\n"
-                  << "        Algumas webs foram enviadas para memoria (M).\n" << std::endl;
+                  << "        Todas as webs foram enviadas para memoria (M).\n" << std::endl;
+                  
+        for (Web& w : finalResult.webs) {
+            w.assignedRegister = NO_REGISTER;
+        }
+        finalResult.registersUsed = 0;
     }
 
     std::ofstream file(outputFile);
@@ -21,10 +28,10 @@ void Writer::write(const AllocationResult& result, const std::string& outputFile
         throw std::runtime_error("Nao foi possivel abrir o ficheiro de output: " + outputFile);
     }
 
-    const std::vector<Web>& webs = result.webs;
+    // 3. Passamos a usar a cópia (finalResult) para escrever o ficheiro
+    const std::vector<Web>& webs = finalResult.webs;
     int numWebs = static_cast<int>(webs.size());
 
- 
     file << "# Total number of webs followed by the listing of the program points of each one\n";
     file << "# program points in each web are sorted in ascending order\n";
     file << "webs: " << numWebs << "\n";
@@ -33,12 +40,10 @@ void Writer::write(const AllocationResult& result, const std::string& outputFile
         file << "web" << i << ": " << formatWebPoints(webs[i]) << "\n";
     }
 
-  
     file << "# Total number of registers used, followed by assignment to webs\n";
-    file << "registers: " << result.registersUsed << "\n";
+    // Atualizamos também aqui para o finalResult
+    file << "registers: " << finalResult.registersUsed << "\n";
 
-    // Group webs by register for the output lines (r0: webX, r0: webY, ...)
-    // Registers first, then spilled webs
     std::map<int, std::vector<int>> regToWebs; // register → list of web indices
     std::vector<int> spilledWebIndices;
 
@@ -50,14 +55,12 @@ void Writer::write(const AllocationResult& result, const std::string& outputFile
         }
     }
 
-    // Print register assignments in order r0, r1, ...
     for (auto& [reg, webIndices] : regToWebs) {
         for (int idx : webIndices) {
             file << "r" << reg << ": web" << idx << "\n";
         }
     }
 
-    // Print spilled webs
     for (int idx : spilledWebIndices) {
         file << "M: web" << idx << "\n";
     }
@@ -71,8 +74,7 @@ std::string Writer::formatWebPoints(const Web& web) {
     std::ostringstream oss;
     bool first = true;
 
-    // activeLines is already a sorted set
-    for (int line : web.activeLines) {
+     for (int line : web.activeLines) {
         if (!first) oss << ",";
         first = false;
 
@@ -83,7 +85,7 @@ std::string Writer::formatWebPoints(const Web& web) {
         } else if (web.endLines.count(line)) {
             oss << "-";
         }
-        // plain lines (neither start nor end) have no suffix
+        
     }
 
     return oss.str();

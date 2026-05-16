@@ -1,15 +1,15 @@
 # Total number of webs followed by the listing of the program points of each one
 # program points in each web are sorted in ascending order
 webs: 5
-web0: 7+,8,9,10-
-web1: 1+,2,3,4,5,6-
-web2: 9+,10,11,12-
-web3: 12+,13,14-
-web4: 11,12-,20+
+web0: 1+,2,3,10-
+web1: 2+,3,4,5-
+web2: 4+,5,6,7-
+web3: 6+,7,8,9-
+web4: 8+,9,10,11-
 # Total number of registers used, followed by assignment to webs
-registers: 1
-r0: web0
-r0: web1
-r0: web3
+registers: 2
+r0: web2
 r0: web4
-M: web2
+r1: web1
+r1: web3
+M: web0

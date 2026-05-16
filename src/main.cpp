@@ -44,6 +44,18 @@ void processAllocation(const std::string& rangesFile,
                   << " web(s) permitida(s) para memoria." << std::endl;
         result = allocator.allocateWithSpilling(maxSpills);
 
+    } else if (config.algorithmType == "splitting") {
+        // T2.3: greedy coloring with up to K web splits
+        int maxSplits = (config.algorithmParam > 0) ? config.algorithmParam : 1;
+        std::cout << "    -> Modo splitting: maximo de " << maxSplits
+                  << " split(s) permitido(s)." << std::endl;
+        result = allocator.allocateWithSplitting(maxSplits);
+
+    } else if (config.algorithmType == "free") {
+        // T2.4: Algoritmo livre customizado (Cost-Benefit Spilling)
+        std::cout << "    -> Modo livre [T2.4]: A executar alocacao inteligente por Custo-Beneficio." << std::endl;
+        result = allocator.allocateFree();
+
     } else {
         // Fallback to basic for unrecognised algorithm types
         std::cerr << "    [AVISO] Algoritmo '" << config.algorithmType
@@ -140,7 +152,6 @@ int runInteractiveMode() {
     }
     return 0;
 }
-
 
 int main(int argc, char* argv[]) {
     if (argc > 1) {

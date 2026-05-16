@@ -37,6 +37,7 @@ AllocationResult Allocator::allocateWithSpilling(int maxSpills) {
             std::cout << "    [Spilling] Coloracao bem-sucedida com "
                       << static_cast<int>(forcedSpills.size())
                       << " web(s) derramada(s) para memoria." << std::endl;
+            result.success = true;
             return result;
         }
 
@@ -63,8 +64,7 @@ AllocationResult Allocator::allocateWithSpilling(int maxSpills) {
 
     return bestResult;
 }
-
-AllocationResult Allocator::runColoring(const std::set<int>& forcedSpills) const {
+AllocationResult Allocator::runColoring(const std::set<int>& forcedSpills, bool useSmartSpill) const {
 
     AllocationResult result;
     std::vector<Vertex<Web>*> allVertices = graph_.getVertexSet();
@@ -97,7 +97,9 @@ AllocationResult Allocator::runColoring(const std::set<int>& forcedSpills) const
         }
 
         if (!foundSimplifiable) {
-            Vertex<Web>* spillVertex = chooseSpillCandidate(removed);
+            // CORREÇÃO INTELECTUAL: Escolha condicional do candidato a spill
+            Vertex<Web>* spillVertex = useSmartSpill ? chooseSmartSpillCandidate(removed) 
+                                                     : chooseSpillCandidate(removed);
             if (spillVertex == nullptr) break;
 
             int sid = spillVertex->getInfo().id;
@@ -145,13 +147,13 @@ AllocationResult Allocator::runColoring(const std::set<int>& forcedSpills) const
     std::sort(result.webs.begin(), result.webs.end(),
               [](const Web& a, const Web& b) { return a.id < b.id; });
 
-    result.success       = (spillCount == 0);
+    // O motor apenas reporta os factos sem forçar o Tudo-Ou-Nada aqui
+    result.success = (spillCount == 0);
     result.registersUsed = (maxReg >= 0) ? (maxReg + 1) : 0;
     result.websSpilled   = spillCount;
 
     return result;
 }
-
 
 int Allocator::effectiveDegree(Vertex<Web>* v, const std::set<int>& removed) const {
     int degree = 0;
@@ -202,77 +204,234 @@ int Allocator::assignColor(Vertex<Web>* v, const std::map<int, int>& colors) con
     return NO_REGISTER;
 }
 
-AllocationResult Allocator::runColoring(const std::set<int>& forcedSpills) const {
-   AllocationResult result;
-   result.webs = std::vector<Web>();
-  
-   std::map<int, int> colors;
-   std::stack<Vertex<Web>*> s;
-   std::set<int> removed;
+// ---------------------------------------------------------------------------
+// Public: allocateWithSplitting()  [T2.3 - splitting]
+//
+// Tenta colorir com o algoritmo básico. Se falhar, escolhe o web com maior
+// grau (mais interferências) e divide-o em dois webs derivados, reconstruindo
+// o grafo de interferências e tentando novamente. Repete até maxSplits vezes,
+// parando logo que a coloração tenha sucesso (mínimo de splits usados).
+//
+// Racional da escolha: o web com maior grau é o que mais dificulta a coloração.
+// O ponto de corte é escolhido para minimizar max(grau_esq, grau_dir) nos
+// dois webs derivados, equilibrando a carga de interferências.
+// ---------------------------------------------------------------------------
 
+AllocationResult Allocator::allocateWithSplitting(int maxSplits) {
 
-   for (int id : forcedSpills) {
-       removed.insert(id);
-       colors[id] = NO_REGISTER;
-   }
+    if (graph_.getVertexSet().empty()) {
+        AllocationResult r; r.success = true; return r;
+    }
 
+    // Cópia mutável dos webs para poder adicionar webs derivados
+    std::vector<Web> currentWebs;
+    for (Vertex<Web>* v : graph_.getVertexSet()) {
+        currentWebs.push_back(v->getInfo());
+    }
 
-   while (removed.size() < graph_.getVertexSet().size()) {
-       Vertex<Web>* candidate = nullptr;
+    int nextId = 0;
+    for (const Web& w : currentWebs) nextId = std::max(nextId, w.id + 1);
 
+    AllocationResult bestResult;
+    bestResult.websSpilled = INT_MAX;
 
-       for (auto v : graph_.getVertexSet()) {
-           int wid = v->getInfo().id;
-           if (removed.count(wid)) continue;
+    for (int attempt = 0; attempt <= maxSplits; ++attempt) {
 
+        Graph<Web> currentGraph = buildGraph(currentWebs);
+        Allocator tempAllocator(currentGraph, numRegisters_);
+        AllocationResult result = tempAllocator.runColoring({});
 
-           if (effectiveDegree(v, removed) < numRegisters_) {
-               candidate = v;
-               break;
-           }
-       }
+        if (result.websSpilled < bestResult.websSpilled) bestResult = result;
 
+        if (result.success) {
+            std::cout << "    [Splitting] Coloracao bem-sucedida com "
+                      << attempt << " split(s) efectuado(s)." << std::endl;
+            return result;
+        }
 
-       if (candidate == nullptr) {
-           candidate = chooseSpillCandidate(removed);
-       }
+        if (attempt < maxSplits) {
+            int idx = chooseSplitCandidate(currentWebs, currentGraph);
+            if (idx < 0) break;
 
+            const Web& chosen = currentWebs[idx];
+            std::cout << "    [Splitting] Split " << (attempt + 1)
+                      << ": a dividir web id=" << chosen.id
+                      << " (variavel: " << chosen.variableName
+                      << ", linhas=" << chosen.activeLines.size() << ")" << std::endl;
 
-       if (candidate) {
-           s.push(candidate);
-           removed.insert(candidate->getInfo().id);
-       }
-   }
+            auto [left, right] = splitWeb(chosen, currentWebs, nextId);
+            currentWebs.erase(currentWebs.begin() + idx);
+            currentWebs.push_back(left);
+            currentWebs.push_back(right);
+        }
+    }
 
-
-   while (!s.empty()) {
-       Vertex<Web>* v = s.top();
-       s.pop();
-
-
-       int reg = assignColor(v, colors);
-       colors[v->getInfo().id] = reg;
-
-
-       if (reg == NO_REGISTER) {
-           result.websSpilled++;
-       }
-   }
-
-
-   result.success = (result.websSpilled == 0);
-   std::set<int> uniqueRegs;
-  
-   for (auto v : graph_.getVertexSet()) {
-       Web w = v->getInfo();
-       w.assignedRegister = colors[w.id];
-       result.webs.push_back(w);
-       if (w.assignedRegister != NO_REGISTER) {
-           uniqueRegs.insert(w.assignedRegister);
-       }
-   }
-   result.registersUsed = uniqueRegs.size();
-
-
-   return result;
+    std::cerr << "\n[AVISO] Nao foi possivel colorir o grafo com "
+              << numRegisters_ << " registos e no maximo "
+              << maxSplits << " split(s).\n"
+              << "        " << bestResult.websSpilled
+              << " web(s) enviada(s) para memoria no melhor resultado.\n";
+    return bestResult;
 }
+
+// ---------------------------------------------------------------------------
+// Static: buildGraph() — constrói grafo de interferências a partir de webs
+// ---------------------------------------------------------------------------
+Graph<Web> Allocator::buildGraph(const std::vector<Web>& webs) {
+    Graph<Web> g;
+    for (const Web& w : webs) g.addVertex(w);
+    for (size_t i = 0; i < webs.size(); ++i)
+        for (size_t j = i + 1; j < webs.size(); ++j)
+            if (websInterfere(webs[i], webs[j]))
+                g.addBidirectionalEdge(webs[i], webs[j], 1.0);
+    return g;
+}
+
+// ---------------------------------------------------------------------------
+// Static: chooseSplitCandidate() — web com maior grau que tenha >= 2 linhas
+// ---------------------------------------------------------------------------
+int Allocator::chooseSplitCandidate(const std::vector<Web>& webs,
+                                     const Graph<Web>& graph) {
+    int bestIdx = -1, bestDeg = -1;
+    for (size_t i = 0; i < webs.size(); ++i) {
+        if ((int)webs[i].activeLines.size() < 2) continue;
+        Vertex<Web>* v = graph.findVertex(webs[i]);
+        if (!v) continue;
+        int deg = (int)v->getAdj().size();
+        if (deg > bestDeg) { bestDeg = deg; bestIdx = (int)i; }
+    }
+    return bestIdx;
+}
+
+// ---------------------------------------------------------------------------
+// Static: splitWeb() — divide um web no ponto que minimiza max(deg_L, deg_R)
+// ---------------------------------------------------------------------------
+std::pair<Web, Web> Allocator::splitWeb(const Web& web,
+                                         const std::vector<Web>& allWebs,
+                                         int& nextId) {
+    std::vector<int> lines(web.activeLines.begin(), web.activeLines.end());
+    int n = (int)lines.size();
+    int bestCut = n / 2, bestScore = INT_MAX;
+
+    for (int cut = 1; cut < n; ++cut) {
+        Web left, right;
+        for (int k = 0;   k < cut; ++k) left.activeLines.insert(lines[k]);
+        for (int k = cut; k < n;   ++k) right.activeLines.insert(lines[k]);
+        for (int x : web.startLines) {
+            if (left.activeLines.count(x))  left.startLines.insert(x);
+            else                             right.startLines.insert(x);
+        }
+        for (int x : web.endLines) {
+            if (left.activeLines.count(x))  left.endLines.insert(x);
+            else                             right.endLines.insert(x);
+        }
+        int dL = 0, dR = 0;
+        for (const Web& other : allWebs) {
+            if (other.id == web.id) continue;
+            if (websInterfere(left,  other)) ++dL;
+            if (websInterfere(right, other)) ++dR;
+        }
+        int score = std::max(dL, dR);
+        if (score < bestScore) { bestScore = score; bestCut = cut; }
+    }
+
+    Web left, right;
+    left.id  = web.id; right.id = nextId++;
+    left.variableName = right.variableName = web.variableName;
+    for (int k = 0;       k < bestCut; ++k) left.activeLines.insert(lines[k]);
+    for (int k = bestCut; k < n;       ++k) right.activeLines.insert(lines[k]);
+    for (int x : web.startLines) {
+        if (left.activeLines.count(x))  left.startLines.insert(x);
+        else                             right.startLines.insert(x);
+    }
+    for (int x : web.endLines) {
+        if (left.activeLines.count(x))  left.endLines.insert(x);
+        else                             right.endLines.insert(x);
+    }
+    return {left, right};
+}
+
+bool Allocator::websInterfere(const Web& w1, const Web& w2) {
+    for (int line : w1.activeLines) {
+        if (!w2.activeLines.count(line)) continue;
+        bool w1S = w1.startLines.count(line), w1E = w1.endLines.count(line);
+        bool w2S = w2.startLines.count(line), w2E = w2.endLines.count(line);
+        if ((w1S && w2E) || (w1E && w2S)) continue;
+        return true;
+    }
+    return false;
+}
+
+Vertex<Web>* Allocator::chooseSmartSpillCandidate(const std::set<int>& removed) const {
+    Vertex<Web>* best = nullptr;
+    double bestScore = -1.0;
+
+    for (Vertex<Web>* v : graph_.getVertexSet()) {
+        int wid = v->getInfo().id;
+        if (removed.count(wid)) continue;
+
+        int deg = effectiveDegree(v, removed);
+        
+        // Quantas linhas de código esta variável ocupa?
+        // Previne divisão por zero caso a web esteja estranhamente vazia
+        int webSize = std::max(1, static_cast<int>(v->getInfo().activeLines.size())); 
+
+        // A nossa heurística premium: Benefício (grau) a dividir pelo Custo (tamanho)
+        double score = static_cast<double>(deg) / webSize;
+
+        // Desempate: se o score for igual, escolhemos o id menor para determinismo
+        if (score > bestScore || (score == bestScore && best != nullptr &&
+                                  v->getInfo().id < best->getInfo().id)) {
+            bestScore = score;
+            best = v;
+        }
+    }
+    return best;
+}
+
+AllocationResult Allocator::allocateFree() {
+    std::vector<Vertex<Web>*> allVertices = graph_.getVertexSet();
+    if (allVertices.empty()) {
+        AllocationResult r; r.success = true; return r;
+    }
+
+    std::set<int> forcedSpills;
+    AllocationResult bestResult;
+    bestResult.websSpilled = INT_MAX;
+    
+    int maxPossibleSpills = static_cast<int>(allVertices.size());
+
+    for (int attempt = 0; attempt <= maxPossibleSpills; ++attempt) {
+        
+        // Passamos 'true' no segundo argumento para ativar o modo inteligente!
+        AllocationResult result = runColoring(forcedSpills, true);
+
+        if (result.websSpilled < bestResult.websSpilled) {
+            bestResult = result;
+        }
+
+        if (result.success || result.websSpilled == static_cast<int>(forcedSpills.size())) {
+            std::cout << "    [Modo Livre] Alocacao finalizada com "
+                      << static_cast<int>(forcedSpills.size())
+                      << " web(s) derramada(s) de forma inteligente." << std::endl;
+            result.success = true;
+            return result;
+        }
+
+        if (attempt < maxPossibleSpills) {
+            Vertex<Web>* candidate = chooseSmartSpillCandidate(forcedSpills);
+            if (candidate == nullptr) break;
+
+            int cid = candidate->getInfo().id;
+            forcedSpills.insert(cid);
+
+            std::cout << "    [Modo Livre] Tentativa " << (attempt + 1)
+                      << ": Spill inteligente da web id=" << cid
+                      << " (Variavel: " << candidate->getInfo().variableName
+                      << ", Racio Custo-Beneficio favoravel) e a tentar novamente..." << std::endl;
+        }
+    }
+
+    return bestResult;
+}
+

@@ -490,6 +490,11 @@ template <class T>
 Graph<T>::~Graph() {
     deleteMatrix(distMatrix, vertexSet.size());
     deleteMatrix(pathMatrix, vertexSet.size());
+
+    for (auto v : vertexSet) { //alteração
+        v->removeOutgoingEdges();
+        delete v;
+    }
 }
 
 #endif /* DA_TP_CLASSES_GRAPH */
