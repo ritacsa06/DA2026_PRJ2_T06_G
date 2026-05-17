@@ -177,10 +177,7 @@ private:
                                         const std::vector<Web>& allWebs,
                                         int& nextId);
 
-    /**
-     * @brief Checks whether two webs interfere (same rule as the Parser).
-     */
-    static bool websInterfere(const Web& w1, const Web& w2);
+  
 
     
     

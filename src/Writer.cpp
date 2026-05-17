@@ -16,11 +16,6 @@ void Writer::write(const AllocationResult& result, const std::string& outputFile
     if (!finalResult.success) {
         std::cerr << "\n[AVISO] A alocacao de registos nao foi possivel com o numero de registos fornecido.\n"
                   << "        Todas as webs foram enviadas para memoria (M).\n" << std::endl;
-                  
-        for (Web& w : finalResult.webs) {
-            w.assignedRegister = NO_REGISTER;
-        }
-        finalResult.registersUsed = 0;
     }
 
     std::ofstream file(outputFile);
@@ -28,7 +23,7 @@ void Writer::write(const AllocationResult& result, const std::string& outputFile
         throw std::runtime_error("Nao foi possivel abrir o ficheiro de output: " + outputFile);
     }
 
-    // 3. Passamos a usar a cópia (finalResult) para escrever o ficheiro
+  
     const std::vector<Web>& webs = finalResult.webs;
     int numWebs = static_cast<int>(webs.size());
 
@@ -41,10 +36,10 @@ void Writer::write(const AllocationResult& result, const std::string& outputFile
     }
 
     file << "# Total number of registers used, followed by assignment to webs\n";
-    // Atualizamos também aqui para o finalResult
+   
     file << "registers: " << finalResult.registersUsed << "\n";
 
-    std::map<int, std::vector<int>> regToWebs; // register → list of web indices
+    std::map<int, std::vector<int>> regToWebs;
     std::vector<int> spilledWebIndices;
 
     for (int i = 0; i < numWebs; ++i) {

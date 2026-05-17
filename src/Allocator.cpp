@@ -51,7 +51,7 @@ AllocationResult Allocator::allocateWithSpilling(int maxSpills) {
             std::cout << "    [Spilling] Tentativa " << (attempt + 1)
                       << ": a derramar web id=" << cid
                       << " (variavel: " << candidate->getInfo().variableName
-                      << ", grau=" << effectiveDegree(candidate, forcedSpills) + 1
+                      << ", grau=" << effectiveDegree(candidate, forcedSpills)
                       << ") e a tentar novamente..." << std::endl;
         }
     }
@@ -97,7 +97,7 @@ AllocationResult Allocator::runColoring(const std::set<int>& forcedSpills, bool 
         }
 
         if (!foundSimplifiable) {
-            // CORREÇÃO INTELECTUAL: Escolha condicional do candidato a spill
+           
             Vertex<Web>* spillVertex = useSmartSpill ? chooseSmartSpillCandidate(removed) 
                                                      : chooseSpillCandidate(removed);
             if (spillVertex == nullptr) break;
@@ -147,7 +147,7 @@ AllocationResult Allocator::runColoring(const std::set<int>& forcedSpills, bool 
     std::sort(result.webs.begin(), result.webs.end(),
               [](const Web& a, const Web& b) { return a.id < b.id; });
 
-    // O motor apenas reporta os factos sem forçar o Tudo-Ou-Nada aqui
+  
     result.success = (spillCount == 0);
     result.registersUsed = (maxReg >= 0) ? (maxReg + 1) : 0;
     result.websSpilled   = spillCount;
@@ -204,18 +204,6 @@ int Allocator::assignColor(Vertex<Web>* v, const std::map<int, int>& colors) con
     return NO_REGISTER;
 }
 
-// ---------------------------------------------------------------------------
-// Public: allocateWithSplitting()  [T2.3 - splitting]
-//
-// Tenta colorir com o algoritmo básico. Se falhar, escolhe o web com maior
-// grau (mais interferências) e divide-o em dois webs derivados, reconstruindo
-// o grafo de interferências e tentando novamente. Repete até maxSplits vezes,
-// parando logo que a coloração tenha sucesso (mínimo de splits usados).
-//
-// Racional da escolha: o web com maior grau é o que mais dificulta a coloração.
-// O ponto de corte é escolhido para minimizar max(grau_esq, grau_dir) nos
-// dois webs derivados, equilibrando a carga de interferências.
-// ---------------------------------------------------------------------------
 
 AllocationResult Allocator::allocateWithSplitting(int maxSplits) {
 
@@ -223,7 +211,6 @@ AllocationResult Allocator::allocateWithSplitting(int maxSplits) {
         AllocationResult r; r.success = true; return r;
     }
 
-    // Cópia mutável dos webs para poder adicionar webs derivados
     std::vector<Web> currentWebs;
     for (Vertex<Web>* v : graph_.getVertexSet()) {
         currentWebs.push_back(v->getInfo());
@@ -274,22 +261,16 @@ AllocationResult Allocator::allocateWithSplitting(int maxSplits) {
     return bestResult;
 }
 
-// ---------------------------------------------------------------------------
-// Static: buildGraph() — constrói grafo de interferências a partir de webs
-// ---------------------------------------------------------------------------
 Graph<Web> Allocator::buildGraph(const std::vector<Web>& webs) {
     Graph<Web> g;
     for (const Web& w : webs) g.addVertex(w);
     for (size_t i = 0; i < webs.size(); ++i)
         for (size_t j = i + 1; j < webs.size(); ++j)
-            if (websInterfere(webs[i], webs[j]))
+            if (websInterfereGlobal(webs[i], webs[j]))
                 g.addBidirectionalEdge(webs[i], webs[j], 1.0);
     return g;
 }
 
-// ---------------------------------------------------------------------------
-// Static: chooseSplitCandidate() — web com maior grau que tenha >= 2 linhas
-// ---------------------------------------------------------------------------
 int Allocator::chooseSplitCandidate(const std::vector<Web>& webs,
                                      const Graph<Web>& graph) {
     int bestIdx = -1, bestDeg = -1;
@@ -303,9 +284,6 @@ int Allocator::chooseSplitCandidate(const std::vector<Web>& webs,
     return bestIdx;
 }
 
-// ---------------------------------------------------------------------------
-// Static: splitWeb() — divide um web no ponto que minimiza max(deg_L, deg_R)
-// ---------------------------------------------------------------------------
 std::pair<Web, Web> Allocator::splitWeb(const Web& web,
                                          const std::vector<Web>& allWebs,
                                          int& nextId) {
@@ -328,8 +306,8 @@ std::pair<Web, Web> Allocator::splitWeb(const Web& web,
         int dL = 0, dR = 0;
         for (const Web& other : allWebs) {
             if (other.id == web.id) continue;
-            if (websInterfere(left,  other)) ++dL;
-            if (websInterfere(right, other)) ++dR;
+            if (websInterfereGlobal(left,  other)) ++dL;
+            if (websInterfereGlobal(right, other)) ++dR;
         }
         int score = std::max(dL, dR);
         if (score < bestScore) { bestScore = score; bestCut = cut; }
@@ -351,16 +329,6 @@ std::pair<Web, Web> Allocator::splitWeb(const Web& web,
     return {left, right};
 }
 
-bool Allocator::websInterfere(const Web& w1, const Web& w2) {
-    for (int line : w1.activeLines) {
-        if (!w2.activeLines.count(line)) continue;
-        bool w1S = w1.startLines.count(line), w1E = w1.endLines.count(line);
-        bool w2S = w2.startLines.count(line), w2E = w2.endLines.count(line);
-        if ((w1S && w2E) || (w1E && w2S)) continue;
-        return true;
-    }
-    return false;
-}
 
 Vertex<Web>* Allocator::chooseSmartSpillCandidate(const std::set<int>& removed) const {
     Vertex<Web>* best = nullptr;
@@ -372,14 +340,13 @@ Vertex<Web>* Allocator::chooseSmartSpillCandidate(const std::set<int>& removed) 
 
         int deg = effectiveDegree(v, removed);
         
-        // Quantas linhas de código esta variável ocupa?
-        // Previne divisão por zero caso a web esteja estranhamente vazia
+
         int webSize = std::max(1, static_cast<int>(v->getInfo().activeLines.size())); 
 
-        // A nossa heurística premium: Benefício (grau) a dividir pelo Custo (tamanho)
+
         double score = static_cast<double>(deg) / webSize;
 
-        // Desempate: se o score for igual, escolhemos o id menor para determinismo
+
         if (score > bestScore || (score == bestScore && best != nullptr &&
                                   v->getInfo().id < best->getInfo().id)) {
             bestScore = score;
@@ -403,7 +370,7 @@ AllocationResult Allocator::allocateFree() {
 
     for (int attempt = 0; attempt <= maxPossibleSpills; ++attempt) {
         
-        // Passamos 'true' no segundo argumento para ativar o modo inteligente!
+       
         AllocationResult result = runColoring(forcedSpills, true);
 
         if (result.websSpilled < bestResult.websSpilled) {

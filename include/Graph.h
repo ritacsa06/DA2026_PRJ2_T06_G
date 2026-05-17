@@ -491,7 +491,7 @@ Graph<T>::~Graph() {
     deleteMatrix(distMatrix, vertexSet.size());
     deleteMatrix(pathMatrix, vertexSet.size());
 
-    for (auto v : vertexSet) { //alteração
+    for (auto v : vertexSet) {
         v->removeOutgoingEdges();
         delete v;
     }

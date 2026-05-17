@@ -24,7 +24,7 @@ private:
     
     static void mergeIntoWebs(std::vector<Web>& webs, const std::string& varName, 
                               const std::vector<std::string>& tokens);
-    static bool websInterfere(const Web& w1, const Web& w2);
+    
 };
 
 #endif

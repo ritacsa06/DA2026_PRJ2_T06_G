@@ -4,7 +4,6 @@
 #include <iostream>
 #include <algorithm>
 
-
 Config Parser::parseRegisters(const std::string& filename) {
     Config config;
     std::ifstream file(filename);
@@ -15,7 +14,7 @@ Config Parser::parseRegisters(const std::string& filename) {
     }
 
     while (std::getline(file, line)) {
-        if (line.empty() || line[0] == '#') continue; // Ignorar comentários
+        if (line.empty() || line[0] == '#') continue;
 
         std::istringstream iss(line);
         std::string key;
@@ -50,7 +49,7 @@ Graph<Web> Parser::parseRangesAndBuildGraph(const std::string& filename) {
         throw std::runtime_error("Nao foi possivel abrir o ficheiro: " + filename);
     }
 
-    // 1. Ler todas as linhas individualmente
+    // 1. Ler ficheiro linha a linha
     while (std::getline(file, line)) {
         if (line.empty() || line[0] == '#') continue;
 
@@ -90,23 +89,20 @@ Graph<Web> Parser::parseRangesAndBuildGraph(const std::string& filename) {
         changed = false;
         for (size_t i = 0; i < parsedRanges.size(); ++i) {
             for (size_t j = i + 1; j < parsedRanges.size(); ++j) {
-                // Só fundimos se for a mesma variável
                 if (parsedRanges[i].variableName == parsedRanges[j].variableName) {
-                    
                     std::vector<int> intersection;
                     std::set_intersection(parsedRanges[i].activeLines.begin(), parsedRanges[i].activeLines.end(),
                                           parsedRanges[j].activeLines.begin(), parsedRanges[j].activeLines.end(),
                                           std::back_inserter(intersection));
                     
-                    // Se partilham linhas de execução, fazemos o merge
                     if (!intersection.empty()) {
                         parsedRanges[i].activeLines.insert(parsedRanges[j].activeLines.begin(), parsedRanges[j].activeLines.end());
                         parsedRanges[i].startLines.insert(parsedRanges[j].startLines.begin(), parsedRanges[j].startLines.end());
                         parsedRanges[i].endLines.insert(parsedRanges[j].endLines.begin(), parsedRanges[j].endLines.end());
                         
-                        parsedRanges.erase(parsedRanges.begin() + j); // Remove o range absorvido
+                        parsedRanges.erase(parsedRanges.begin() + j);
                         changed = true;
-                        break; // Volta a avaliar com os índices atualizados
+                        break;
                     }
                 }
             }
@@ -114,13 +110,13 @@ Graph<Web> Parser::parseRangesAndBuildGraph(const std::string& filename) {
         }
     }
 
-    // 3. Atribuir IDs definitivos às Webs fundidas
+    // 3. Atribuir IDs definitivos as Webs fundidas
     int webCounter = 0;
     for (auto& web : parsedRanges) {
         web.id = webCounter++;
     }
 
-    // 4. Construir o Grafo
+    // 4. Construir o Grafo de Interferencia
     Graph<Web> interferenceGraph;
     for (const auto& web : parsedRanges) {
         interferenceGraph.addVertex(web);
@@ -128,39 +124,12 @@ Graph<Web> Parser::parseRangesAndBuildGraph(const std::string& filename) {
 
     for (size_t i = 0; i < parsedRanges.size(); ++i) {
         for (size_t j = i + 1; j < parsedRanges.size(); ++j) {
-            if (websInterfere(parsedRanges[i], parsedRanges[j])) {
+            // AQUI USAMOS A NOVA FUNCAO GLOBAL REFATORADA
+            if (websInterfereGlobal(parsedRanges[i], parsedRanges[j])) {
                 interferenceGraph.addBidirectionalEdge(parsedRanges[i], parsedRanges[j], 1.0);
             }
         }
     }
 
     return interferenceGraph;
-}
-
-
-bool Parser::websInterfere(const Web& w1, const Web& w2) {
-    
-    std::vector<int> commonLines;
-    std::set_intersection(w1.activeLines.begin(), w1.activeLines.end(),
-                          w2.activeLines.begin(), w2.activeLines.end(),
-                          std::back_inserter(commonLines));
-
-    if (commonLines.empty()) return false; 
-
-   for (int line : commonLines) {
-        bool w1Start = w1.startLines.count(line);
-        bool w1End = w1.endLines.count(line);
-        bool w2Start = w2.startLines.count(line);
-        bool w2End = w2.endLines.count(line);
-
-       
-        if ((w1Start && w2End) || (w1End && w2Start)) {
-            continue; 
-        }
-
-        
-        return true; 
-    }
-
-    return false;
 }
