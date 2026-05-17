@@ -325,7 +325,7 @@ int Allocator::chooseSplitCandidate(const std::vector<Web>& webs,
 
 /**
  * @brief Divides a web into two at the optimal cut point to minimize resulting interferences.
- * <b>Time Complexity:</b> O(L * V), tests all possible cut points L against all other webs V.
+ * <b>Time Complexity:</b> O(L^2 * V), tests all possible cut points L against all other webs V.
  */
 std::pair<Web, Web> Allocator::splitWeb(const Web& web,
                                          const std::vector<Web>& allWebs,

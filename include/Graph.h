@@ -491,6 +491,15 @@ Graph<T>::~Graph() {
     deleteMatrix(distMatrix, vertexSet.size());
     deleteMatrix(pathMatrix, vertexSet.size());
 
+    for (auto v : vertexSet) {
+        
+        for (auto e : v->getAdj()) {
+            delete e; 
+        }
+      
+        delete v;
+    }
+
     
 }
 

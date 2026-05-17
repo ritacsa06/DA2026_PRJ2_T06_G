@@ -47,16 +47,6 @@ public:
      */
     static Graph<Web> parseRangesAndBuildGraph(const std::string& filename);
 
-private:
-    /**
-     * @brief Helper function to process tokens and merge them into the web collection.
-     * * * <b>Time Complexity:</b> O(T), where T is the number of string tokens to process.
-     * * @param webs Reference to the vector of webs being built.
-     * @param varName Name of the variable being parsed.
-     * @param tokens Vector of string tokens representing live ranges from a line.
-     */
-    static void mergeIntoWebs(std::vector<Web>& webs, const std::string& varName, 
-                              const std::vector<std::string>& tokens);
 };
 
 #endif // PARSER_H
