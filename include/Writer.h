@@ -5,9 +5,9 @@
 #include "Allocator.h"   // for AllocationResult
 
 /**
- * @brief Writes the allocation result to a file in the required output format.
- *
- * Output format (see project spec, Figures 11 & 12):
+ * @brief Static utility class responsible for writing the final allocation result to an output file.
+ * * @details Formats the output strictly according to the project specifications (Figures 11 & 12).
+ * The output format follows this structure:
  *
  * @code
  * # Total number of webs followed by the listing of the program points of each one
@@ -24,32 +24,33 @@
  * ...
  * M: web3       <- spilled web
  * @endcode
- *
- * Time complexity: O(W * L) where W = number of webs, L = max active lines per web.
  */
 class Writer {
 public:
     /**
-     * @brief Writes the AllocationResult to the given file path.
+     * @brief Writes the computed AllocationResult to the specified file path.
      *
-     * If the allocation was unsuccessful (some webs spilled) a warning is
-     * also printed to std::cerr.
+     * @details Iterates through the webs and their assigned registers to construct the final text file. 
+     * If the allocation was completely unsuccessful according to the strict rules, it formats 
+     * all webs to memory ('M') and sets registers to 0, printing a warning to `std::cerr`.
+     * * <b>Time Complexity:</b> O(W * L), where W is the total number of webs and L is the maximum number of active lines per web.
      *
-     * @param result     The result produced by Allocator::allocate().
-     * @param outputFile Path to the output text file.
+     * @param result     The final AllocationResult produced by the Allocator.
+     * @param outputFile String representing the path to the output text file.
      * @throws std::runtime_error if the file cannot be opened for writing.
      */
     static void write(const AllocationResult& result, const std::string& outputFile);
 
 private:
     /**
-     * @brief Formats a single web's program points as the spec requires.
+     * @brief Formats a single web's active program points into the required string format.
      *
-     * Points are listed in ascending order.  The start point gets a '+' suffix
-     * and the end point gets a '-' suffix.  If a point is both a start and an
-     * end (edge case with fused ranges) the '+' takes precedence.
+     * @details Points are iterated in ascending order (guaranteed by the underlying `std::set`). 
+     * The start point receives a '+' suffix, and the end point receives a '-' suffix. 
+     * If a point is simultaneously a start and an end (edge case with fused ranges), the '+' takes precedence.
+     * * <b>Time Complexity:</b> O(L), where L is the number of active lines in the web.
      *
-     * @param web The web to format.
+     * @param web The web structure to format.
      * @return A comma-separated string of annotated line numbers.
      */
     static std::string formatWebPoints(const Web& web);

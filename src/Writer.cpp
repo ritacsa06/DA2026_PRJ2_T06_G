@@ -1,3 +1,8 @@
+/**
+ * @file Writer.cpp
+ * @brief Implementation of the Writer class for outputting allocation results.
+ */
+
 #include "Writer.h"
 #include <fstream>
 #include <sstream>
@@ -7,12 +12,18 @@
 #include <vector>
 #include <algorithm>
 
+/**
+ * @brief Writes the computed AllocationResult to the specified file path.
+ *
+ * @details Iterates through the webs and their assigned registers to construct the final text file. 
+ * If the allocation was unsuccessful (spilling occurred), it prints a warning to `std::cerr` 
+ * but proceeds to write the partial/spilled allocation to the file as required by the specification.
+ * <b>Time Complexity:</b> O(W * L), where W is the total number of webs and L is the maximum number of active lines per web.
+ */
 void Writer::write(const AllocationResult& result, const std::string& outputFile) {
     
-  
     AllocationResult finalResult = result;
 
-   
     if (!finalResult.success) {
         std::cerr << "\n[AVISO] A alocacao de registos nao foi possivel com o numero de registos fornecido.\n"
                   << "        Todas as webs foram enviadas para memoria (M).\n" << std::endl;
@@ -23,7 +34,6 @@ void Writer::write(const AllocationResult& result, const std::string& outputFile
         throw std::runtime_error("Nao foi possivel abrir o ficheiro de output: " + outputFile);
     }
 
-  
     const std::vector<Web>& webs = finalResult.webs;
     int numWebs = static_cast<int>(webs.size());
 
@@ -65,6 +75,14 @@ void Writer::write(const AllocationResult& result, const std::string& outputFile
     std::cout << "[OK] Resultado escrito em: " << outputFile << std::endl;
 }
 
+/**
+ * @brief Formats a single web's active program points into the required string format.
+ *
+ * @details Points are iterated in ascending order. The start point receives a '+' suffix, 
+ * and the end point receives a '-' suffix. If a point is simultaneously a start and an end 
+ * (edge case with fused ranges), the '+' takes precedence.
+ * <b>Time Complexity:</b> O(L), where L is the number of active lines in the web.
+ */
 std::string Writer::formatWebPoints(const Web& web) {
     std::ostringstream oss;
     bool first = true;

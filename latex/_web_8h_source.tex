@@ -1,0 +1,56 @@
+\doxysection{Web.\+h}
+\hypertarget{_web_8h_source}{}\label{_web_8h_source}\index{include/Web.h@{include/Web.h}}
+\doxymbox{\hyperlink{_web_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#ifndef\ WEB\_H}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#define\ WEB\_H}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <set>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <algorithm>}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00012\ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ NO\_REGISTER\ =\ -\/1;}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00019\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_web}{Web}}\ \{}
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keywordtype}{int}\ \textcolor{keywordtype}{id}\ =\ -\/1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00021\ \ \ \ \ std::string\ \doxymbox{\hyperlink{struct_web_aaa3554c72464b25172ab8aea6607975d}{variableName}};\ \ \ \ \ }
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \ \ \ \ std::set<int>\ \doxymbox{\hyperlink{struct_web_a56f103f0d2db1ab3792622bab89c5c19}{activeLines}};\ \ \ \ }
+\DoxyCodeLine{00024\ \ \ \ \ std::set<int>\ \doxymbox{\hyperlink{struct_web_ade94932380875feb09a2a2884ad6a85b}{startLines}};\ \ \ \ \ }
+\DoxyCodeLine{00025\ \ \ \ \ std::set<int>\ \doxymbox{\hyperlink{struct_web_ac518e4cd61fd159fa2be98292ef89f48}{endLines}};\ \ \ \ \ \ \ }
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{struct_web_a2acb6cdba4709c8389b608dfd0b3ba1a}{assignedRegister}}\ =\ NO\_REGISTER;\ }
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_web_a16da476f833dbef76518e40b369ae39e}{operator==}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_web}{Web}}\&\ other)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keywordtype}{id}\ ==\ other.\doxymbox{\hyperlink{struct_web_af59e2bcb1907d91a75a5d2598e0eb1b6}{id}};}
+\DoxyCodeLine{00037\ \ \ \ \ \}}
+\DoxyCodeLine{00038\ \};}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00050\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{_web_8h_a3dacc9d56a87127b9e6e64d01be67fe9}{websInterfereGlobal}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_web}{Web}}\&\ w1,\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_web}{Web}}\&\ w2)\ \{}
+\DoxyCodeLine{00051\ \ \ \ \ std::vector<int>\ commonLines;}
+\DoxyCodeLine{00052\ \ \ \ \ }
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{comment}{//\ Find\ the\ intersection\ of\ active\ lines}}
+\DoxyCodeLine{00054\ \ \ \ \ std::set\_intersection(w1.\doxymbox{\hyperlink{struct_web_a56f103f0d2db1ab3792622bab89c5c19}{activeLines}}.begin(),\ w1.\doxymbox{\hyperlink{struct_web_a56f103f0d2db1ab3792622bab89c5c19}{activeLines}}.end(),}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ w2.\doxymbox{\hyperlink{struct_web_a56f103f0d2db1ab3792622bab89c5c19}{activeLines}}.begin(),\ w2.\doxymbox{\hyperlink{struct_web_a56f103f0d2db1ab3792622bab89c5c19}{activeLines}}.end(),}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::back\_inserter(commonLines));}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keywordflow}{if}\ (commonLines.empty())\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};\ }
+\DoxyCodeLine{00059\ \ \ \ \ }
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{comment}{//\ Check\ for\ boundary\ conditions\ (def-\/use\ overlap)}}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ line\ :\ commonLines)\ \{}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ w1Start\ =\ w1.\doxymbox{\hyperlink{struct_web_ade94932380875feb09a2a2884ad6a85b}{startLines}}.count(line),\ w1End\ =\ w1.\doxymbox{\hyperlink{struct_web_ac518e4cd61fd159fa2be98292ef89f48}{endLines}}.count(line);}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ w2Start\ =\ w2.\doxymbox{\hyperlink{struct_web_ade94932380875feb09a2a2884ad6a85b}{startLines}}.count(line),\ w2End\ =\ w2.\doxymbox{\hyperlink{struct_web_ac518e4cd61fd159fa2be98292ef89f48}{endLines}}.count(line);}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ If\ one\ ends\ and\ the\ other\ starts\ at\ the\ same\ line,\ no\ interference\ here}}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((w1Start\ \&\&\ w2End)\ ||\ (w1End\ \&\&\ w2Start))\ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};\ }
+\DoxyCodeLine{00069\ \ \ \ \ \}}
+\DoxyCodeLine{00070\ \ \ \ \ }
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00072\ \}}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//\ WEB\_H}}
+
+\end{DoxyCode}

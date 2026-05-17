@@ -1,3 +1,8 @@
+/**
+ * @file Allocator.cpp
+ * @brief Implementation of the Allocator class algorithms for register allocation.
+ */
+
 #include "Allocator.h"
 #include <iostream>
 #include <map>
@@ -6,15 +11,27 @@
 #include <algorithm>
 #include <climits>
 
+/**
+ * @brief Constructs an Allocator.
+ * <b>Time Complexity:</b> O(1).
+ */
 Allocator::Allocator(const Graph<Web>& graph, int numRegs)
     : graph_(graph), numRegisters_(numRegs) {}
 
+/**
+ * @brief Executes basic allocation without any controlled spilling or splitting.
+ * <b>Time Complexity:</b> O(V^2 + E), where V is the number of webs and E is the number of edges.
+ */
 AllocationResult Allocator::allocate() {
     return runColoring({});
 }
 
+/**
+ * @brief Executes allocation allowing up to maxSpills controlled spills.
+ * @details Iteratively removes the web with the highest effective degree and retries coloring.
+ * <b>Time Complexity:</b> O(S * (V^2 + E)), where S is maxSpills.
+ */
 AllocationResult Allocator::allocateWithSpilling(int maxSpills) {
-
     if (graph_.getVertexSet().empty()) {
         AllocationResult r;
         r.success = true;
@@ -26,7 +43,6 @@ AllocationResult Allocator::allocateWithSpilling(int maxSpills) {
     bestResult.websSpilled = INT_MAX;
 
     for (int attempt = 0; attempt <= maxSpills; ++attempt) {
-
         AllocationResult result = runColoring(forcedSpills);
 
         if (result.websSpilled < bestResult.websSpilled) {
@@ -64,8 +80,14 @@ AllocationResult Allocator::allocateWithSpilling(int maxSpills) {
 
     return bestResult;
 }
-AllocationResult Allocator::runColoring(const std::set<int>& forcedSpills, bool useSmartSpill) const {
 
+/**
+ * @brief Core engine that performs graph simplification and coloring.
+ * @details Pushes nodes with degree < K onto a stack. Nodes remaining are spilled.
+ * Then pops nodes and assigns the lowest available color.
+ * <b>Time Complexity:</b> O(V^2 + E), as it scans vertices and their adjacencies.
+ */
+AllocationResult Allocator::runColoring(const std::set<int>& forcedSpills, bool useSmartSpill) const {
     AllocationResult result;
     std::vector<Vertex<Web>*> allVertices = graph_.getVertexSet();
 
@@ -81,7 +103,6 @@ AllocationResult Allocator::runColoring(const std::set<int>& forcedSpills, bool 
     int totalNodes = static_cast<int>(allVertices.size());
 
     while (static_cast<int>(removed.size()) < totalNodes) {
-
         bool foundSimplifiable = false;
 
         for (Vertex<Web>* v : allVertices) {
@@ -97,7 +118,6 @@ AllocationResult Allocator::runColoring(const std::set<int>& forcedSpills, bool 
         }
 
         if (!foundSimplifiable) {
-           
             Vertex<Web>* spillVertex = useSmartSpill ? chooseSmartSpillCandidate(removed) 
                                                      : chooseSpillCandidate(removed);
             if (spillVertex == nullptr) break;
@@ -109,7 +129,6 @@ AllocationResult Allocator::runColoring(const std::set<int>& forcedSpills, bool 
     }
 
     std::map<int, int> colors;
-
     for (int sid : spilledIds) {
         colors[sid] = NO_REGISTER;
     }
@@ -147,7 +166,6 @@ AllocationResult Allocator::runColoring(const std::set<int>& forcedSpills, bool 
     std::sort(result.webs.begin(), result.webs.end(),
               [](const Web& a, const Web& b) { return a.id < b.id; });
 
-  
     result.success = (spillCount == 0);
     result.registersUsed = (maxReg >= 0) ? (maxReg + 1) : 0;
     result.websSpilled   = spillCount;
@@ -155,6 +173,10 @@ AllocationResult Allocator::runColoring(const std::set<int>& forcedSpills, bool 
     return result;
 }
 
+/**
+ * @brief Calculates the effective degree of a vertex excluding removed neighbors.
+ * <b>Time Complexity:</b> O(D), where D is the out-degree of the vertex.
+ */
 int Allocator::effectiveDegree(Vertex<Web>* v, const std::set<int>& removed) const {
     int degree = 0;
     for (Edge<Web>* e : v->getAdj()) {
@@ -166,6 +188,10 @@ int Allocator::effectiveDegree(Vertex<Web>* v, const std::set<int>& removed) con
     return degree;
 }
 
+/**
+ * @brief Selects the standard spill candidate based purely on highest degree.
+ * <b>Time Complexity:</b> O(V + E) to calculate effective degrees for all active nodes.
+ */
 Vertex<Web>* Allocator::chooseSpillCandidate(const std::set<int>& removed) const {
     Vertex<Web>* best    = nullptr;
     int          bestDeg = -1;
@@ -184,6 +210,10 @@ Vertex<Web>* Allocator::chooseSpillCandidate(const std::set<int>& removed) const
     return best;
 }
 
+/**
+ * @brief Finds the lowest available color not used by neighboring vertices.
+ * <b>Time Complexity:</b> O(D + K), where D is degree and K is numRegisters.
+ */
 int Allocator::assignColor(Vertex<Web>* v, const std::map<int, int>& colors) const {
     std::set<int> usedColors;
 
@@ -204,9 +234,11 @@ int Allocator::assignColor(Vertex<Web>* v, const std::map<int, int>& colors) con
     return NO_REGISTER;
 }
 
-
+/**
+ * @brief Executes allocation allowing up to maxSplits controlled web splits.
+ * <b>Time Complexity:</b> O(S * V^2 * L), where S is maxSplits.
+ */
 AllocationResult Allocator::allocateWithSplitting(int maxSplits) {
-
     if (graph_.getVertexSet().empty()) {
         AllocationResult r; r.success = true; return r;
     }
@@ -223,7 +255,6 @@ AllocationResult Allocator::allocateWithSplitting(int maxSplits) {
     bestResult.websSpilled = INT_MAX;
 
     for (int attempt = 0; attempt <= maxSplits; ++attempt) {
-
         Graph<Web> currentGraph = buildGraph(currentWebs);
         Allocator tempAllocator(currentGraph, numRegisters_);
         AllocationResult result = tempAllocator.runColoring({});
@@ -261,6 +292,10 @@ AllocationResult Allocator::allocateWithSplitting(int maxSplits) {
     return bestResult;
 }
 
+/**
+ * @brief Constructs a new interference graph from a vector of webs.
+ * <b>Time Complexity:</b> O(V^2 * L), checks interference for all pairs.
+ */
 Graph<Web> Allocator::buildGraph(const std::vector<Web>& webs) {
     Graph<Web> g;
     for (const Web& w : webs) g.addVertex(w);
@@ -271,6 +306,10 @@ Graph<Web> Allocator::buildGraph(const std::vector<Web>& webs) {
     return g;
 }
 
+/**
+ * @brief Selects a web to be split based on the highest degree and size >= 2.
+ * <b>Time Complexity:</b> O(V).
+ */
 int Allocator::chooseSplitCandidate(const std::vector<Web>& webs,
                                      const Graph<Web>& graph) {
     int bestIdx = -1, bestDeg = -1;
@@ -284,6 +323,10 @@ int Allocator::chooseSplitCandidate(const std::vector<Web>& webs,
     return bestIdx;
 }
 
+/**
+ * @brief Divides a web into two at the optimal cut point to minimize resulting interferences.
+ * <b>Time Complexity:</b> O(L * V), tests all possible cut points L against all other webs V.
+ */
 std::pair<Web, Web> Allocator::splitWeb(const Web& web,
                                          const std::vector<Web>& allWebs,
                                          int& nextId) {
@@ -329,7 +372,10 @@ std::pair<Web, Web> Allocator::splitWeb(const Web& web,
     return {left, right};
 }
 
-
+/**
+ * @brief Selects a spill candidate using the Cost-Benefit ratio (Degree / Size).
+ * <b>Time Complexity:</b> O(V + E) to calculate scores for active nodes.
+ */
 Vertex<Web>* Allocator::chooseSmartSpillCandidate(const std::set<int>& removed) const {
     Vertex<Web>* best = nullptr;
     double bestScore = -1.0;
@@ -339,13 +385,9 @@ Vertex<Web>* Allocator::chooseSmartSpillCandidate(const std::set<int>& removed) 
         if (removed.count(wid)) continue;
 
         int deg = effectiveDegree(v, removed);
-        
-
         int webSize = std::max(1, static_cast<int>(v->getInfo().activeLines.size())); 
 
-
         double score = static_cast<double>(deg) / webSize;
-
 
         if (score > bestScore || (score == bestScore && best != nullptr &&
                                   v->getInfo().id < best->getInfo().id)) {
@@ -356,6 +398,10 @@ Vertex<Web>* Allocator::chooseSmartSpillCandidate(const std::set<int>& removed) 
     return best;
 }
 
+/**
+ * @brief Executes allocation using the custom Cost-Benefit smart heuristic.
+ * <b>Time Complexity:</b> O(V * (V^2 + E)), as it iterates through possible smart spills.
+ */
 AllocationResult Allocator::allocateFree() {
     std::vector<Vertex<Web>*> allVertices = graph_.getVertexSet();
     if (allVertices.empty()) {
@@ -369,8 +415,6 @@ AllocationResult Allocator::allocateFree() {
     int maxPossibleSpills = static_cast<int>(allVertices.size());
 
     for (int attempt = 0; attempt <= maxPossibleSpills; ++attempt) {
-        
-       
         AllocationResult result = runColoring(forcedSpills, true);
 
         if (result.websSpilled < bestResult.websSpilled) {
@@ -401,4 +445,3 @@ AllocationResult Allocator::allocateFree() {
 
     return bestResult;
 }
-

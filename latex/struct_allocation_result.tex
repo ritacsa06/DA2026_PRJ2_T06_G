@@ -1,0 +1,75 @@
+\doxysection{Allocation\+Result Struct Reference}
+\hypertarget{struct_allocation_result}{}\label{struct_allocation_result}\index{AllocationResult@{AllocationResult}}
+
+
+Result produced by the \doxylink{class_allocator}{Allocator} after running the coloring algorithm.  
+
+
+
+
+{\ttfamily \+\#include $<$Allocator.\+h$>$}
+
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+bool \doxymbox{\hyperlink{struct_allocation_result_a936eb75c39932bf369325a842c007bc0}{success}} = false
+\begin{DoxyCompactList}\small\item\em True if all webs were successfully assigned a register. \end{DoxyCompactList}\item 
+int \doxymbox{\hyperlink{struct_allocation_result_ad2745bf126a525f87be4ea94e99d393a}{registers\+Used}} = 0
+\begin{DoxyCompactList}\small\item\em Number of distinct registers actually used. \end{DoxyCompactList}\item 
+int \doxymbox{\hyperlink{struct_allocation_result_a8d2a62ba958551f85411d4d7742d7f90}{webs\+Spilled}} = 0
+\begin{DoxyCompactList}\small\item\em Number of webs sent to memory. \end{DoxyCompactList}\item 
+std::\+vector$<$ \doxymbox{\hyperlink{struct_web}{Web}} $>$ \doxymbox{\hyperlink{struct_allocation_result_a0594ff7608a831b09e23c8767079c13d}{webs}}
+\begin{DoxyCompactList}\small\item\em Final webs with the assigned\+Register field filled in. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Result produced by the \doxylink{class_allocator}{Allocator} after running the coloring algorithm. 
+
+\label{doc-variable-members}
+\Hypertarget{struct_allocation_result_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{struct_allocation_result_ad2745bf126a525f87be4ea94e99d393a}\index{AllocationResult@{AllocationResult}!registersUsed@{registersUsed}}
+\index{registersUsed@{registersUsed}!AllocationResult@{AllocationResult}}
+\doxysubsubsection{\texorpdfstring{registersUsed}{registersUsed}}
+{\footnotesize\ttfamily \label{struct_allocation_result_ad2745bf126a525f87be4ea94e99d393a} 
+int Allocation\+Result::\+registers\+Used = 0}
+
+
+
+Number of distinct registers actually used. 
+
+\Hypertarget{struct_allocation_result_a936eb75c39932bf369325a842c007bc0}\index{AllocationResult@{AllocationResult}!success@{success}}
+\index{success@{success}!AllocationResult@{AllocationResult}}
+\doxysubsubsection{\texorpdfstring{success}{success}}
+{\footnotesize\ttfamily \label{struct_allocation_result_a936eb75c39932bf369325a842c007bc0} 
+bool Allocation\+Result::\+success = false}
+
+
+
+True if all webs were successfully assigned a register. 
+
+\Hypertarget{struct_allocation_result_a0594ff7608a831b09e23c8767079c13d}\index{AllocationResult@{AllocationResult}!webs@{webs}}
+\index{webs@{webs}!AllocationResult@{AllocationResult}}
+\doxysubsubsection{\texorpdfstring{webs}{webs}}
+{\footnotesize\ttfamily \label{struct_allocation_result_a0594ff7608a831b09e23c8767079c13d} 
+std::\+vector$<$\doxymbox{\hyperlink{struct_web}{Web}}$>$ Allocation\+Result::\+webs}
+
+
+
+Final webs with the assigned\+Register field filled in. 
+
+\Hypertarget{struct_allocation_result_a8d2a62ba958551f85411d4d7742d7f90}\index{AllocationResult@{AllocationResult}!websSpilled@{websSpilled}}
+\index{websSpilled@{websSpilled}!AllocationResult@{AllocationResult}}
+\doxysubsubsection{\texorpdfstring{websSpilled}{websSpilled}}
+{\footnotesize\ttfamily \label{struct_allocation_result_a8d2a62ba958551f85411d4d7742d7f90} 
+int Allocation\+Result::\+webs\+Spilled = 0}
+
+
+
+Number of webs sent to memory. 
+
+
+
+The documentation for this struct was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+include/\+\doxymbox{\hyperlink{_allocator_8h}{Allocator.\+h}}\end{DoxyCompactItemize}

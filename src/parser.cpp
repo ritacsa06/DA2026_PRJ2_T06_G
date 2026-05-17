@@ -1,9 +1,20 @@
+/**
+ * @file Parser.cpp
+ * @brief Implementation of the Parser class for reading configuration and live ranges.
+ */
+
 #include "Parser.h"
 #include <fstream>
 #include <sstream>
 #include <iostream>
 #include <algorithm>
 
+/**
+ * @brief Reads the registers file and extracts the allocation configuration.
+ * * @details Parses lines looking for "registers:" and "algorithm:" keywords, 
+ * handling optional algorithm parameters separated by commas.
+ * <b>Time Complexity:</b> O(L), where L is the number of lines in the configuration file.
+ */
 Config Parser::parseRegisters(const std::string& filename) {
     Config config;
     std::ifstream file(filename);
@@ -40,6 +51,15 @@ Config Parser::parseRegisters(const std::string& filename) {
     return config;
 }
 
+/**
+ * @brief Reads the live ranges file, constructs webs, and builds the interference graph (T1.2).
+ * * @details Reads the file line by line. Uses a greedy algorithm to merge overlapping 
+ * or contiguous live ranges belonging to the same variable into a single unified Web.
+ * After assigning definitive IDs, it builds the interference graph by checking 
+ * execution point overlaps between all pairs of webs using `websInterfereGlobal`.
+ * <b>Time Complexity:</b> O(L + W^2 * P), where L is the number of lines in the file, 
+ * W is the final number of merged webs, and P is the average number of active program points per web.
+ */
 Graph<Web> Parser::parseRangesAndBuildGraph(const std::string& filename) {
     std::ifstream file(filename);
     std::string line;
@@ -49,7 +69,7 @@ Graph<Web> Parser::parseRangesAndBuildGraph(const std::string& filename) {
         throw std::runtime_error("Nao foi possivel abrir o ficheiro: " + filename);
     }
 
-    // 1. Ler ficheiro linha a linha
+    // 1. Read file line by line
     while (std::getline(file, line)) {
         if (line.empty() || line[0] == '#') continue;
 
@@ -83,7 +103,7 @@ Graph<Web> Parser::parseRangesAndBuildGraph(const std::string& filename) {
         parsedRanges.push_back(tempWeb);
     }
 
-    // 2. Algoritmo Greedy para fundir Live Ranges que se intersetam (mesma variavel)
+    // 2. Greedy algorithm to merge overlapping Live Ranges of the same variable
     bool changed = true;
     while (changed) {
         changed = false;
@@ -96,9 +116,22 @@ Graph<Web> Parser::parseRangesAndBuildGraph(const std::string& filename) {
                                           std::back_inserter(intersection));
                     
                     if (!intersection.empty()) {
+                        // Merge active, start, and end lines
                         parsedRanges[i].activeLines.insert(parsedRanges[j].activeLines.begin(), parsedRanges[j].activeLines.end());
                         parsedRanges[i].startLines.insert(parsedRanges[j].startLines.begin(), parsedRanges[j].startLines.end());
                         parsedRanges[i].endLines.insert(parsedRanges[j].endLines.begin(), parsedRanges[j].endLines.end());
+                        
+                        // Cancel markers at the merge point (if one range ends where another begins)
+                        std::vector<int> toCancel;
+                        for (int x : parsedRanges[i].startLines) {
+                            if (parsedRanges[i].endLines.count(x)) {
+                                toCancel.push_back(x);
+                            }
+                        }
+                        for (int x : toCancel) {
+                            parsedRanges[i].startLines.erase(x);
+                            parsedRanges[i].endLines.erase(x);
+                        }
                         
                         parsedRanges.erase(parsedRanges.begin() + j);
                         changed = true;
@@ -110,13 +143,13 @@ Graph<Web> Parser::parseRangesAndBuildGraph(const std::string& filename) {
         }
     }
 
-    // 3. Atribuir IDs definitivos as Webs fundidas
+    // 3. Assign definitive IDs to the merged Webs
     int webCounter = 0;
     for (auto& web : parsedRanges) {
         web.id = webCounter++;
     }
 
-    // 4. Construir o Grafo de Interferencia
+    // 4. Build the Interference Graph
     Graph<Web> interferenceGraph;
     for (const auto& web : parsedRanges) {
         interferenceGraph.addVertex(web);
@@ -124,7 +157,7 @@ Graph<Web> Parser::parseRangesAndBuildGraph(const std::string& filename) {
 
     for (size_t i = 0; i < parsedRanges.size(); ++i) {
         for (size_t j = i + 1; j < parsedRanges.size(); ++j) {
-            // AQUI USAMOS A NOVA FUNCAO GLOBAL REFATORADA
+            // Use the globally refactored interference function
             if (websInterfereGlobal(parsedRanges[i], parsedRanges[j])) {
                 interferenceGraph.addBidirectionalEdge(parsedRanges[i], parsedRanges[j], 1.0);
             }

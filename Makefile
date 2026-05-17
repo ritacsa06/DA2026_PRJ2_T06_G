@@ -9,7 +9,7 @@ OBJ_DIR = obj
 INC_DIR = include
 BIN_DIR = .
 
-# Nome do executável conforme exigido no enunciado (T1.1)
+
 TARGET = myProg
 
 # Descoberta automática de ficheiros fonte e objetos
@@ -29,16 +29,16 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Gerar documentação Doxygen (T1.3)
+# Gerar documentação Doxygen 
 doxygen:
 	@echo "A gerar documentação com Doxygen..."
-	doxygen docs/Doxyfile
+	doxygen Doxyfile
 
 # Limpeza do projeto
 clean:
 	@echo "A limpar ficheiros temporários e executável..."
 	rm -rf $(OBJ_DIR) $(TARGET)
-	rm -rf docs/html docs/latex
+	rm -rf docs/html latex
 
-# Comandos "Phony" (não representam ficheiros)
+# Comandos "Phony" para evitar conflitos com ficheiros do mesmo nome
 .PHONY: all clean doxygen
