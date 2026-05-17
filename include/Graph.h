@@ -491,11 +491,7 @@ Graph<T>::~Graph() {
     deleteMatrix(distMatrix, vertexSet.size());
     deleteMatrix(pathMatrix, vertexSet.size());
 
-    // Fix for the memory leak pointed out in code review
-    for (auto v : vertexSet) {
-        v->removeOutgoingEdges();
-        delete v;
-    }
+    
 }
 
 #endif /* DA_TP_CLASSES_GRAPH */
