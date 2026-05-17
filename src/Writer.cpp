@@ -27,6 +27,10 @@ void Writer::write(const AllocationResult& result, const std::string& outputFile
     if (!finalResult.success) {
         std::cerr << "\n[AVISO] A alocacao de registos nao foi possivel com o numero de registos fornecido.\n"
                   << "        Todas as webs foram enviadas para memoria (M).\n" << std::endl;
+                  finalResult.registersUsed = 0;
+        for (auto& web : finalResult.webs) {
+            web.assignedRegister = NO_REGISTER;
+        }
     }
 
     std::ofstream file(outputFile);

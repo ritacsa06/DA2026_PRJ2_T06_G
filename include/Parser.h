@@ -17,7 +17,7 @@ struct Config {
 
 /**
  * @brief Static utility class responsible for parsing input files and constructing the foundational data structures.
- * * @details Handles the extraction of configuration settings and the processing of 
+ * @details Handles the extraction of configuration settings and the processing of 
  * variable live ranges to build the interference graph used by the allocator.
  */
 class Parser {
@@ -26,8 +26,8 @@ public:
      * @brief Reads the registers file and extracts the allocation configuration.
      * * @details Parses lines looking for "registers:" and "algorithm:" keywords, 
      * handling optional algorithm parameters separated by commas.
-     * * <b>Time Complexity:</b> O(L), where L is the number of lines in the configuration file.
-     * * @param filename Path to the registers text file.
+     * <b>Time Complexity:</b> O(L), where L is the number of lines in the configuration file.
+     * @param filename Path to the registers text file.
      * @return A Config struct containing the parsed settings.
      * @throws std::runtime_error if the file cannot be opened.
      */
@@ -39,9 +39,9 @@ public:
      * or contiguous live ranges belonging to the same variable into a single unified Web.
      * After assigning definitive IDs, it builds the interference graph by checking 
      * execution point overlaps between all pairs of webs using `websInterfereGlobal`.
-     * * <b>Time Complexity:</b> O(L + W^2 * P), where L is the number of lines in the file, 
+     * <b>Time Complexity:</b> O(L + W^2 * P), where L is the number of lines in the file, 
      * W is the final number of merged webs, and P is the average number of active program points per web.
-     * * @param filename Path to the live ranges text file.
+     * @param filename Path to the live ranges text file.
      * @return A Graph<Web> representing the interference graph.
      * @throws std::runtime_error if the file cannot be opened.
      */

@@ -1,0 +1,139 @@
+\doxysection{src/\+main.cpp File Reference}
+\hypertarget{main_8cpp}{}\label{main_8cpp}\index{src/main.cpp@{src/main.cpp}}
+
+
+Entry point for the Register \doxylink{class_allocator}{Allocator} Compiler module.  
+
+
+{\ttfamily \+\#include $<$iostream$>$}\newline
+{\ttfamily \+\#include $<$string$>$}\newline
+{\ttfamily \+\#include $<$vector$>$}\newline
+{\ttfamily \+\#include "{}Parser.\+h"{}}\newline
+{\ttfamily \+\#include "{}Allocator.\+h"{}}\newline
+{\ttfamily \+\#include "{}Writer.\+h"{}}\newline
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{main_8cpp_aae9955b03cfaf4fb245e2874884b60ca}{process\+Allocation}} (const std::\+string \&ranges\+File, const std::\+string \&registers\+File, const std::\+string \&output\+File)
+\begin{DoxyCompactList}\small\item\em Core pipeline orchestrator for register allocation. \end{DoxyCompactList}\item 
+int \doxymbox{\hyperlink{main_8cpp_aa3710477c4542aeb2371276d4db3bce2}{run\+Batch\+Mode}} (int argc, char \texorpdfstring{$\ast$}{*}argv\+[$\,$]\+)
+\begin{DoxyCompactList}\small\item\em Executes the program in batch mode using command-\/line arguments. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{main_8cpp_a59c2926dd9b0968badf463aaf4f91422}{display\+Menu}} ()
+\begin{DoxyCompactList}\small\item\em Displays the interactive CLI menu to the standard output. {\bfseries{Time Complexity:\+}} O(1). \end{DoxyCompactList}\item 
+int \doxymbox{\hyperlink{main_8cpp_aed11a1d05143e5c6bb70f730fabeb287}{run\+Interactive\+Mode}} ()
+\begin{DoxyCompactList}\small\item\em Executes the program in an interactive CLI loop. \end{DoxyCompactList}\item 
+int \doxymbox{\hyperlink{main_8cpp_a0ddf1224851353fc92bfbff6f499fa97}{main}} (int argc, char \texorpdfstring{$\ast$}{*}argv\+[$\,$]\+)
+\begin{DoxyCompactList}\small\item\em Main entry point of the program. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Entry point for the Register \doxylink{class_allocator}{Allocator} Compiler module. 
+
+Handles command-\/line arguments, provides an interactive CLI, and orchestrates the parsing, allocation, and writing processes. 
+
+\label{doc-func-members}
+\Hypertarget{main_8cpp_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{main_8cpp_a59c2926dd9b0968badf463aaf4f91422}\index{main.cpp@{main.cpp}!displayMenu@{displayMenu}}
+\index{displayMenu@{displayMenu}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{displayMenu()}{displayMenu()}}
+{\footnotesize\ttfamily \label{main_8cpp_a59c2926dd9b0968badf463aaf4f91422} 
+void display\+Menu (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Displays the interactive CLI menu to the standard output. {\bfseries{Time Complexity:\+}} O(1). 
+
+\Hypertarget{main_8cpp_a0ddf1224851353fc92bfbff6f499fa97}\index{main.cpp@{main.cpp}!main@{main}}
+\index{main@{main}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily \label{main_8cpp_a0ddf1224851353fc92bfbff6f499fa97} 
+int main (\begin{DoxyParamCaption}\item[{int}]{argc}{, }\item[{char \texorpdfstring{$\ast$}{*}}]{argv}{\+[$\,$]\+}\end{DoxyParamCaption})}
+
+
+
+Main entry point of the program. 
+
+Routes execution to either batch mode (if "{}-\/b"{} flag is provided) or interactive mode. {\bfseries{Time Complexity:\+}} O(1) overhead.
+
+
+\begin{DoxyParams}{Parameters}
+{\em argc} & Argument count. \\
+\hline
+{\em argv} & Argument vector. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Program exit status code (0 for success). 
+\end{DoxyReturn}
+\Hypertarget{main_8cpp_aae9955b03cfaf4fb245e2874884b60ca}\index{main.cpp@{main.cpp}!processAllocation@{processAllocation}}
+\index{processAllocation@{processAllocation}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{processAllocation()}{processAllocation()}}
+{\footnotesize\ttfamily \label{main_8cpp_aae9955b03cfaf4fb245e2874884b60ca} 
+void process\+Allocation (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{ranges\+File}{, }\item[{const std::\+string \&}]{registers\+File}{, }\item[{const std::\+string \&}]{output\+File}{}\end{DoxyParamCaption})}
+
+
+
+Core pipeline orchestrator for register allocation. 
+
+Executes the complete flow of the program:\+
+\begin{DoxyEnumerate}
+\item Parses configuration (available registers and algorithm type).
+\item Parses live ranges, merges them into Webs, and builds the interference graph.
+\item Dispatches the appropriate register allocation algorithm (basic, spilling, splitting, or free).
+\item Writes the final allocation to the output file strictly following the project spec.
+\end{DoxyEnumerate}
+
+{\bfseries{Time Complexity:\+}} Dominated by the allocation algorithm chosen:\+
+\begin{DoxyItemize}
+\item Basic:\+ O(V\texorpdfstring{$^\wedge$}{\string^}2 + E)
+\item Spilling/\+\+Splitting:\+ O(S \texorpdfstring{$\ast$}{*} (V\texorpdfstring{$^\wedge$}{\string^}2 + E)) or O(\+S \texorpdfstring{$\ast$}{*} V\texorpdfstring{$^\wedge$}{\string^}2 \texorpdfstring{$\ast$}{*} L)
+\item Free:\+ O(V \texorpdfstring{$\ast$}{*} (V\texorpdfstring{$^\wedge$}{\string^}2 + E))
+\end{DoxyItemize}
+
+
+\begin{DoxyParams}{Parameters}
+{\em ranges\+File} & Path to the live ranges input file. \\
+\hline
+{\em registers\+File} & Path to the registers configuration input file. \\
+\hline
+{\em output\+File} & Path where the final allocation result will be saved. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{main_8cpp_aa3710477c4542aeb2371276d4db3bce2}\index{main.cpp@{main.cpp}!runBatchMode@{runBatchMode}}
+\index{runBatchMode@{runBatchMode}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{runBatchMode()}{runBatchMode()}}
+{\footnotesize\ttfamily \label{main_8cpp_aa3710477c4542aeb2371276d4db3bce2} 
+int run\+Batch\+Mode (\begin{DoxyParamCaption}\item[{int}]{argc}{, }\item[{char \texorpdfstring{$\ast$}{*}}]{argv}{\+[$\,$]\+}\end{DoxyParamCaption})}
+
+
+
+Executes the program in batch mode using command-\/line arguments. 
+
+Validates argument count and extracts file paths to run the allocation pipeline without user interaction. {\bfseries{Time Complexity:\+}} O(1) execution overhead + Time Complexity of {\ttfamily \doxylink{main_8cpp_aae9955b03cfaf4fb245e2874884b60ca}{process\+Allocation}}.
+
+
+\begin{DoxyParams}{Parameters}
+{\em argc} & Argument count. \\
+\hline
+{\em argv} & Argument vector (expects:\+ ./\+prog -\/b $<$ranges$>$ $<$registers$>$ $<$output$>$). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 on success, 1 on argument error or fatal execution exception. 
+\end{DoxyReturn}
+\Hypertarget{main_8cpp_aed11a1d05143e5c6bb70f730fabeb287}\index{main.cpp@{main.cpp}!runInteractiveMode@{runInteractiveMode}}
+\index{runInteractiveMode@{runInteractiveMode}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{runInteractiveMode()}{runInteractiveMode()}}
+{\footnotesize\ttfamily \label{main_8cpp_aed11a1d05143e5c6bb70f730fabeb287} 
+int run\+Interactive\+Mode (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Executes the program in an interactive CLI loop. 
+
+Prompts the user for input/\+output paths and processes them until the user chooses to exit. {\bfseries{Time Complexity:\+}} O(1) overhead per iteration + Time Complexity of {\ttfamily \doxylink{main_8cpp_aae9955b03cfaf4fb245e2874884b60ca}{process\+Allocation}}.
+
+\begin{DoxyReturn}{Returns}
+0 upon clean exit. 
+\end{DoxyReturn}

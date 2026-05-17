@@ -33,7 +33,7 @@ public:
      * @details Iterates through the webs and their assigned registers to construct the final text file. 
      * If the allocation was completely unsuccessful according to the strict rules, it formats 
      * all webs to memory ('M') and sets registers to 0, printing a warning to `std::cerr`.
-     * * <b>Time Complexity:</b> O(W * L), where W is the total number of webs and L is the maximum number of active lines per web.
+     * <b>Time Complexity:</b> O(W * L), where W is the total number of webs and L is the maximum number of active lines per web.
      *
      * @param result     The final AllocationResult produced by the Allocator.
      * @param outputFile String representing the path to the output text file.
@@ -48,7 +48,7 @@ private:
      * @details Points are iterated in ascending order (guaranteed by the underlying `std::set`). 
      * The start point receives a '+' suffix, and the end point receives a '-' suffix. 
      * If a point is simultaneously a start and an end (edge case with fused ranges), the '+' takes precedence.
-     * * <b>Time Complexity:</b> O(L), where L is the number of active lines in the web.
+     * <b>Time Complexity:</b> O(L), where L is the number of active lines in the web.
      *
      * @param web The web structure to format.
      * @return A comma-separated string of annotated line numbers.

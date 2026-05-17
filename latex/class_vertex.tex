@@ -1,0 +1,470 @@
+\doxysection{Vertex\texorpdfstring{$<$}{<} T \texorpdfstring{$>$}{>} Class Template Reference}
+\hypertarget{class_vertex}{}\label{class_vertex}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+
+
+Represents a single vertex in the graph.  
+
+
+
+
+{\ttfamily \+\#include $<$Graph.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_vertex_afcbdd4d4198b672356559cb8fa088408}{Vertex}} (T in)
+\begin{DoxyCompactList}\small\item\em Constructs a new \doxylink{class_vertex}{Vertex} with the given information. {\bfseries{Time Complexity:\+}} O(1). \end{DoxyCompactList}\item 
+bool \doxymbox{\hyperlink{class_vertex_a5a6670b842354232bac4dad2f551d66e}{operator$<$}} (\doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$ \&vertex) const
+\begin{DoxyCompactList}\small\item\em Compares this vertex with another based on distance. {\bfseries{Time Complexity:\+}} O(1). \end{DoxyCompactList}\item 
+T \doxymbox{\hyperlink{class_vertex_a48eae2f7af2362634adab02b7b2dbec6}{get\+Info}} () const
+\item 
+std::\+vector$<$ \doxymbox{\hyperlink{class_edge}{Edge}}$<$ T $>$ \texorpdfstring{$\ast$}{*} $>$ \doxymbox{\hyperlink{class_vertex_a0010a7d0b7db1bb81dd2ebb1ffae650a}{get\+Adj}} () const
+\item 
+bool \doxymbox{\hyperlink{class_vertex_aa2bb17f6ebd98a67f8da1f689b22fadc}{is\+Visited}} () const
+\item 
+bool \doxymbox{\hyperlink{class_vertex_aaa41dfa4ce1a19b4e529cc6cdc23b764}{is\+Processing}} () const
+\item 
+unsigned int \doxymbox{\hyperlink{class_vertex_a25642875df28caa2195bad5a9ae44683}{get\+Indegree}} () const
+\item 
+double \doxymbox{\hyperlink{class_vertex_a01e90e3cdb2ee11dd3b1d593c8207382}{get\+Dist}} () const
+\item 
+\doxymbox{\hyperlink{class_edge}{Edge}}$<$ T $>$ \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_vertex_a15e4ff95fba2bb5970a6551137ceb950}{get\+Path}} () const
+\item 
+std::\+vector$<$ \doxymbox{\hyperlink{class_edge}{Edge}}$<$ T $>$ \texorpdfstring{$\ast$}{*} $>$ \doxymbox{\hyperlink{class_vertex_a361d7d0459d37aead6401d6af9f81f0a}{get\+Incoming}} () const
+\item 
+void \doxymbox{\hyperlink{class_vertex_a31cd60c26640f8072a928ba70eb2f95e}{set\+Info}} (T \doxymbox{\hyperlink{class_vertex_a415d7811eef6cdd992f0dca1f35a49cd}{info}})
+\item 
+void \doxymbox{\hyperlink{class_vertex_a95a3f3c55f2ba371fae51d3fe0e76c23}{set\+Visited}} (bool \doxymbox{\hyperlink{class_vertex_a187a2fe4ff50261cf3c15b8cda7dfc56}{visited}})
+\item 
+void \doxymbox{\hyperlink{class_vertex_a5ccb6f7215c915afdbcbdb81ad70a408}{set\+Processing}} (bool \doxymbox{\hyperlink{class_vertex_ae575d4b9a6b1ada3f9626c458c060f54}{processing}})
+\item 
+int \doxymbox{\hyperlink{class_vertex_a3b8e12b4d9805979321212dd6db05961}{get\+Low}} () const
+\item 
+void \doxymbox{\hyperlink{class_vertex_a62acec2c4fcbec56e995974b91444ec9}{set\+Low}} (int value)
+\item 
+int \doxymbox{\hyperlink{class_vertex_ab2916c006fa35b918910a2232095e785}{get\+Num}} () const
+\item 
+void \doxymbox{\hyperlink{class_vertex_ab3f9026ba6cbd11243ab484a856c6581}{set\+Num}} (int value)
+\item 
+void \doxymbox{\hyperlink{class_vertex_af9c4caaac19bdaae5a88a7a671639b59}{set\+Indegree}} (unsigned int \doxymbox{\hyperlink{class_vertex_af5db7e2f035a38dcc7c6e1b03117b06a}{indegree}})
+\item 
+void \doxymbox{\hyperlink{class_vertex_a060fbea0c3738cc3e09d84ad8c431b34}{set\+Dist}} (double \doxymbox{\hyperlink{class_vertex_a08a2b813e77f97aa8b6c1d252e5417f7}{dist}})
+\item 
+void \doxymbox{\hyperlink{class_vertex_a5ebf4b550ec94b89a8f80df1a53cc97d}{set\+Path}} (\doxymbox{\hyperlink{class_edge}{Edge}}$<$ T $>$ \texorpdfstring{$\ast$}{*}\doxymbox{\hyperlink{class_vertex_abfc6d8f64308c47901c72d5ebceda80e}{path}})
+\item 
+\doxymbox{\hyperlink{class_edge}{Edge}}$<$ T $>$ \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_vertex_a36a616b80daad6e2a8c6d2fa78a1eb34}{add\+Edge}} (\doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$ \texorpdfstring{$\ast$}{*}dest, double w)
+\begin{DoxyCompactList}\small\item\em Adds an outgoing edge from this vertex to a destination vertex. {\bfseries{Time Complexity:\+}} O(1). \end{DoxyCompactList}\item 
+bool \doxymbox{\hyperlink{class_vertex_ac1f1dd0a8e1019a242f1120d6559c754}{remove\+Edge}} (T in)
+\begin{DoxyCompactList}\small\item\em Removes an outgoing edge targeting a specific content. {\bfseries{Time Complexity:\+}} O(\+E\+\_\+out), where E\+\_\+out is the number of outgoing edges from this vertex. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_vertex_a414ce58fdf35ee5200a82912f3865506}{remove\+Outgoing\+Edges}} ()
+\begin{DoxyCompactList}\small\item\em Removes all outgoing edges from this vertex. {\bfseries{Time Complexity:\+}} O(\+E\+\_\+out), where E\+\_\+out is the number of outgoing edges. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{class_vertex_a622503fe44ef12d5c39bd1043d47865c}{delete\+Edge}} (\doxymbox{\hyperlink{class_edge}{Edge}}$<$ T $>$ \texorpdfstring{$\ast$}{*}edge)
+\begin{DoxyCompactList}\small\item\em Helper function to delete an edge and remove it from the destination\textquotesingle{}s incoming list. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+T \doxymbox{\hyperlink{class_vertex_a415d7811eef6cdd992f0dca1f35a49cd}{info}}
+\begin{DoxyCompactList}\small\item\em Information stored in the vertex. \end{DoxyCompactList}\item 
+std::\+vector$<$ \doxymbox{\hyperlink{class_edge}{Edge}}$<$ T $>$ \texorpdfstring{$\ast$}{*} $>$ \doxymbox{\hyperlink{class_vertex_adb48310bebc687c86e90d2a20215642f}{adj}}
+\begin{DoxyCompactList}\small\item\em Outgoing edges. \end{DoxyCompactList}\item 
+bool \doxymbox{\hyperlink{class_vertex_a187a2fe4ff50261cf3c15b8cda7dfc56}{visited}} = false
+\begin{DoxyCompactList}\small\item\em Used by DFS, BFS, Prim, etc. \end{DoxyCompactList}\item 
+bool \doxymbox{\hyperlink{class_vertex_ae575d4b9a6b1ada3f9626c458c060f54}{processing}} = false
+\begin{DoxyCompactList}\small\item\em Used by is\+DAG. \end{DoxyCompactList}\item 
+int \doxymbox{\hyperlink{class_vertex_a35d937c418952520cfa26b098e86b755}{low}} = -\/1
+\item 
+int \doxymbox{\hyperlink{class_vertex_aeb941bcd51ef71c6101e02eaed1cae12}{num}} = -\/1
+\begin{DoxyCompactList}\small\item\em Used by Tarjan\textquotesingle{}s SCC algorithm. \end{DoxyCompactList}\item 
+unsigned int \doxymbox{\hyperlink{class_vertex_af5db7e2f035a38dcc7c6e1b03117b06a}{indegree}}
+\begin{DoxyCompactList}\small\item\em Used by topological sort. \end{DoxyCompactList}\item 
+double \doxymbox{\hyperlink{class_vertex_a08a2b813e77f97aa8b6c1d252e5417f7}{dist}} = 0
+\begin{DoxyCompactList}\small\item\em Distance metric for shortest path algorithms. \end{DoxyCompactList}\item 
+\doxymbox{\hyperlink{class_edge}{Edge}}$<$ T $>$ \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_vertex_abfc6d8f64308c47901c72d5ebceda80e}{path}} = nullptr
+\begin{DoxyCompactList}\small\item\em Path pointer for shortest path algorithms. \end{DoxyCompactList}\item 
+std::\+vector$<$ \doxymbox{\hyperlink{class_edge}{Edge}}$<$ T $>$ \texorpdfstring{$\ast$}{*} $>$ \doxymbox{\hyperlink{class_vertex_a004d1b624d1cd1a7afe49295682e2899}{incoming}}
+\begin{DoxyCompactList}\small\item\em Incoming edges. \end{DoxyCompactList}\item 
+int \doxymbox{\hyperlink{class_vertex_a721ab622207a73c5fae7b9abad6c07cc}{queue\+Index}} = 0
+\begin{DoxyCompactList}\small\item\em Required by Mutable\+Priority\+Queue and UFDS. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$class T$>$\newline
+class Vertex$<$ T $>$}
+Represents a single vertex in the graph. 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & The type of information stored in the vertex (e.\+g., \doxylink{struct_web}{Web}). \\
+\hline
+\end{DoxyTemplParams}
+
+
+\label{doc-constructors}
+\Hypertarget{class_vertex_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_vertex_afcbdd4d4198b672356559cb8fa088408}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!Vertex@{Vertex}}
+\index{Vertex@{Vertex}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{Vertex()}{Vertex()}}
+{\footnotesize\ttfamily \label{class_vertex_afcbdd4d4198b672356559cb8fa088408} 
+template$<$class T$>$ \\
+\doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+\+Vertex (\begin{DoxyParamCaption}\item[{T}]{in}{}\end{DoxyParamCaption})}
+
+
+
+Constructs a new \doxylink{class_vertex}{Vertex} with the given information. {\bfseries{Time Complexity:\+}} O(1). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em in} & The information/\+content of the vertex. \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_vertex_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_vertex_a36a616b80daad6e2a8c6d2fa78a1eb34}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!addEdge@{addEdge}}
+\index{addEdge@{addEdge}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{addEdge()}{addEdge()}}
+{\footnotesize\ttfamily \label{class_vertex_a36a616b80daad6e2a8c6d2fa78a1eb34} 
+template$<$class T$>$ \\
+\doxymbox{\hyperlink{class_edge}{Edge}}$<$ T $>$ \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+add\+Edge (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$ \texorpdfstring{$\ast$}{*}}]{dest}{, }\item[{double}]{w}{}\end{DoxyParamCaption})}
+
+
+
+Adds an outgoing edge from this vertex to a destination vertex. {\bfseries{Time Complexity:\+}} O(1). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em dest} & Pointer to the destination vertex. \\
+\hline
+{\em w} & Weight of the edge. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Pointer to the newly created edge. 
+\end{DoxyReturn}
+\Hypertarget{class_vertex_a622503fe44ef12d5c39bd1043d47865c}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!deleteEdge@{deleteEdge}}
+\index{deleteEdge@{deleteEdge}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{deleteEdge()}{deleteEdge()}}
+{\footnotesize\ttfamily \label{class_vertex_a622503fe44ef12d5c39bd1043d47865c} 
+template$<$class T$>$ \\
+void \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+delete\+Edge (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_edge}{Edge}}$<$ T $>$ \texorpdfstring{$\ast$}{*}}]{edge}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Helper function to delete an edge and remove it from the destination\textquotesingle{}s incoming list. 
+
+
+\begin{DoxyItemize}
+\item {\bfseries{Time Complexity:\+}} O(\+E\+\_\+in), where E\+\_\+in is the number of incoming edges of the destination vertex. 
+\begin{DoxyParams}{Parameters}
+{\em edge} & The edge to delete. \\
+\hline
+\end{DoxyParams}
+
+\end{DoxyItemize}\Hypertarget{class_vertex_a0010a7d0b7db1bb81dd2ebb1ffae650a}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!getAdj@{getAdj}}
+\index{getAdj@{getAdj}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{getAdj()}{getAdj()}}
+{\footnotesize\ttfamily \label{class_vertex_a0010a7d0b7db1bb81dd2ebb1ffae650a} 
+template$<$class T$>$ \\
+std::\+vector$<$ \doxymbox{\hyperlink{class_edge}{Edge}}$<$ T $>$ \texorpdfstring{$\ast$}{*} $>$ \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+get\+Adj (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_vertex_a01e90e3cdb2ee11dd3b1d593c8207382}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!getDist@{getDist}}
+\index{getDist@{getDist}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{getDist()}{getDist()}}
+{\footnotesize\ttfamily \label{class_vertex_a01e90e3cdb2ee11dd3b1d593c8207382} 
+template$<$class T$>$ \\
+double \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+get\+Dist (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_vertex_a361d7d0459d37aead6401d6af9f81f0a}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!getIncoming@{getIncoming}}
+\index{getIncoming@{getIncoming}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{getIncoming()}{getIncoming()}}
+{\footnotesize\ttfamily \label{class_vertex_a361d7d0459d37aead6401d6af9f81f0a} 
+template$<$class T$>$ \\
+std::\+vector$<$ \doxymbox{\hyperlink{class_edge}{Edge}}$<$ T $>$ \texorpdfstring{$\ast$}{*} $>$ \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+get\+Incoming (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_vertex_a25642875df28caa2195bad5a9ae44683}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!getIndegree@{getIndegree}}
+\index{getIndegree@{getIndegree}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{getIndegree()}{getIndegree()}}
+{\footnotesize\ttfamily \label{class_vertex_a25642875df28caa2195bad5a9ae44683} 
+template$<$class T$>$ \\
+unsigned int \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+get\+Indegree (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_vertex_a48eae2f7af2362634adab02b7b2dbec6}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!getInfo@{getInfo}}
+\index{getInfo@{getInfo}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{getInfo()}{getInfo()}}
+{\footnotesize\ttfamily \label{class_vertex_a48eae2f7af2362634adab02b7b2dbec6} 
+template$<$class T$>$ \\
+T \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+get\+Info (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_vertex_a3b8e12b4d9805979321212dd6db05961}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!getLow@{getLow}}
+\index{getLow@{getLow}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{getLow()}{getLow()}}
+{\footnotesize\ttfamily \label{class_vertex_a3b8e12b4d9805979321212dd6db05961} 
+template$<$class T$>$ \\
+int \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+get\+Low (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_vertex_ab2916c006fa35b918910a2232095e785}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!getNum@{getNum}}
+\index{getNum@{getNum}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{getNum()}{getNum()}}
+{\footnotesize\ttfamily \label{class_vertex_ab2916c006fa35b918910a2232095e785} 
+template$<$class T$>$ \\
+int \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+get\+Num (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_vertex_a15e4ff95fba2bb5970a6551137ceb950}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!getPath@{getPath}}
+\index{getPath@{getPath}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{getPath()}{getPath()}}
+{\footnotesize\ttfamily \label{class_vertex_a15e4ff95fba2bb5970a6551137ceb950} 
+template$<$class T$>$ \\
+\doxymbox{\hyperlink{class_edge}{Edge}}$<$ T $>$ \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+get\+Path (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_vertex_aaa41dfa4ce1a19b4e529cc6cdc23b764}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!isProcessing@{isProcessing}}
+\index{isProcessing@{isProcessing}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{isProcessing()}{isProcessing()}}
+{\footnotesize\ttfamily \label{class_vertex_aaa41dfa4ce1a19b4e529cc6cdc23b764} 
+template$<$class T$>$ \\
+bool \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+is\+Processing (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_vertex_aa2bb17f6ebd98a67f8da1f689b22fadc}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!isVisited@{isVisited}}
+\index{isVisited@{isVisited}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{isVisited()}{isVisited()}}
+{\footnotesize\ttfamily \label{class_vertex_aa2bb17f6ebd98a67f8da1f689b22fadc} 
+template$<$class T$>$ \\
+bool \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+is\+Visited (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_vertex_a5a6670b842354232bac4dad2f551d66e}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!operator$<$@{operator$<$}}
+\index{operator$<$@{operator$<$}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{operator$<$()}{operator<()}}
+{\footnotesize\ttfamily \label{class_vertex_a5a6670b842354232bac4dad2f551d66e} 
+template$<$class T$>$ \\
+bool \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+operator$<$ (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$ \&}]{vertex}{}\end{DoxyParamCaption}) const}
+
+
+
+Compares this vertex with another based on distance. {\bfseries{Time Complexity:\+}} O(1). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em vertex} & The other vertex to compare against. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if this vertex\textquotesingle{}s distance is less than the other\textquotesingle{}s. 
+\end{DoxyReturn}
+\Hypertarget{class_vertex_ac1f1dd0a8e1019a242f1120d6559c754}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!removeEdge@{removeEdge}}
+\index{removeEdge@{removeEdge}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{removeEdge()}{removeEdge()}}
+{\footnotesize\ttfamily \label{class_vertex_ac1f1dd0a8e1019a242f1120d6559c754} 
+template$<$class T$>$ \\
+bool \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+remove\+Edge (\begin{DoxyParamCaption}\item[{T}]{in}{}\end{DoxyParamCaption})}
+
+
+
+Removes an outgoing edge targeting a specific content. {\bfseries{Time Complexity:\+}} O(\+E\+\_\+out), where E\+\_\+out is the number of outgoing edges from this vertex. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em in} & The content of the destination vertex to remove the edge to. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if the edge was found and removed, false otherwise. 
+\end{DoxyReturn}
+\Hypertarget{class_vertex_a414ce58fdf35ee5200a82912f3865506}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!removeOutgoingEdges@{removeOutgoingEdges}}
+\index{removeOutgoingEdges@{removeOutgoingEdges}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{removeOutgoingEdges()}{removeOutgoingEdges()}}
+{\footnotesize\ttfamily \label{class_vertex_a414ce58fdf35ee5200a82912f3865506} 
+template$<$class T$>$ \\
+void \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+remove\+Outgoing\+Edges (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Removes all outgoing edges from this vertex. {\bfseries{Time Complexity:\+}} O(\+E\+\_\+out), where E\+\_\+out is the number of outgoing edges. 
+
+\Hypertarget{class_vertex_a060fbea0c3738cc3e09d84ad8c431b34}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!setDist@{setDist}}
+\index{setDist@{setDist}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{setDist()}{setDist()}}
+{\footnotesize\ttfamily \label{class_vertex_a060fbea0c3738cc3e09d84ad8c431b34} 
+template$<$class T$>$ \\
+void \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+set\+Dist (\begin{DoxyParamCaption}\item[{double}]{dist}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_vertex_af9c4caaac19bdaae5a88a7a671639b59}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!setIndegree@{setIndegree}}
+\index{setIndegree@{setIndegree}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{setIndegree()}{setIndegree()}}
+{\footnotesize\ttfamily \label{class_vertex_af9c4caaac19bdaae5a88a7a671639b59} 
+template$<$class T$>$ \\
+void \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+set\+Indegree (\begin{DoxyParamCaption}\item[{unsigned int}]{indegree}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_vertex_a31cd60c26640f8072a928ba70eb2f95e}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!setInfo@{setInfo}}
+\index{setInfo@{setInfo}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{setInfo()}{setInfo()}}
+{\footnotesize\ttfamily \label{class_vertex_a31cd60c26640f8072a928ba70eb2f95e} 
+template$<$class T$>$ \\
+void \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+set\+Info (\begin{DoxyParamCaption}\item[{T}]{info}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_vertex_a62acec2c4fcbec56e995974b91444ec9}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!setLow@{setLow}}
+\index{setLow@{setLow}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{setLow()}{setLow()}}
+{\footnotesize\ttfamily \label{class_vertex_a62acec2c4fcbec56e995974b91444ec9} 
+template$<$class T$>$ \\
+void \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+set\+Low (\begin{DoxyParamCaption}\item[{int}]{value}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_vertex_ab3f9026ba6cbd11243ab484a856c6581}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!setNum@{setNum}}
+\index{setNum@{setNum}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{setNum()}{setNum()}}
+{\footnotesize\ttfamily \label{class_vertex_ab3f9026ba6cbd11243ab484a856c6581} 
+template$<$class T$>$ \\
+void \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+set\+Num (\begin{DoxyParamCaption}\item[{int}]{value}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_vertex_a5ebf4b550ec94b89a8f80df1a53cc97d}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!setPath@{setPath}}
+\index{setPath@{setPath}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{setPath()}{setPath()}}
+{\footnotesize\ttfamily \label{class_vertex_a5ebf4b550ec94b89a8f80df1a53cc97d} 
+template$<$class T$>$ \\
+void \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+set\+Path (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_edge}{Edge}}$<$ T $>$ \texorpdfstring{$\ast$}{*}}]{path}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_vertex_a5ccb6f7215c915afdbcbdb81ad70a408}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!setProcessing@{setProcessing}}
+\index{setProcessing@{setProcessing}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{setProcessing()}{setProcessing()}}
+{\footnotesize\ttfamily \label{class_vertex_a5ccb6f7215c915afdbcbdb81ad70a408} 
+template$<$class T$>$ \\
+void \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+set\+Processing (\begin{DoxyParamCaption}\item[{bool}]{processing}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_vertex_a95a3f3c55f2ba371fae51d3fe0e76c23}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!setVisited@{setVisited}}
+\index{setVisited@{setVisited}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{setVisited()}{setVisited()}}
+{\footnotesize\ttfamily \label{class_vertex_a95a3f3c55f2ba371fae51d3fe0e76c23} 
+template$<$class T$>$ \\
+void \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+set\+Visited (\begin{DoxyParamCaption}\item[{bool}]{visited}{}\end{DoxyParamCaption})}
+
+
+
+\label{doc-variable-members}
+\Hypertarget{class_vertex_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_vertex_adb48310bebc687c86e90d2a20215642f}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!adj@{adj}}
+\index{adj@{adj}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{adj}{adj}}
+{\footnotesize\ttfamily \label{class_vertex_adb48310bebc687c86e90d2a20215642f} 
+template$<$class T$>$ \\
+std::\+vector$<$\doxymbox{\hyperlink{class_edge}{Edge}}$<$T$>$ \texorpdfstring{$\ast$}{*}$>$ \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+adj\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Outgoing edges. 
+
+\Hypertarget{class_vertex_a08a2b813e77f97aa8b6c1d252e5417f7}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!dist@{dist}}
+\index{dist@{dist}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{dist}{dist}}
+{\footnotesize\ttfamily \label{class_vertex_a08a2b813e77f97aa8b6c1d252e5417f7} 
+template$<$class T$>$ \\
+double \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+dist = 0\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Distance metric for shortest path algorithms. 
+
+\Hypertarget{class_vertex_a004d1b624d1cd1a7afe49295682e2899}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!incoming@{incoming}}
+\index{incoming@{incoming}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{incoming}{incoming}}
+{\footnotesize\ttfamily \label{class_vertex_a004d1b624d1cd1a7afe49295682e2899} 
+template$<$class T$>$ \\
+std::\+vector$<$\doxymbox{\hyperlink{class_edge}{Edge}}$<$T$>$ \texorpdfstring{$\ast$}{*}$>$ \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+incoming\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Incoming edges. 
+
+\Hypertarget{class_vertex_af5db7e2f035a38dcc7c6e1b03117b06a}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!indegree@{indegree}}
+\index{indegree@{indegree}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{indegree}{indegree}}
+{\footnotesize\ttfamily \label{class_vertex_af5db7e2f035a38dcc7c6e1b03117b06a} 
+template$<$class T$>$ \\
+unsigned int \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+indegree\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Used by topological sort. 
+
+\Hypertarget{class_vertex_a415d7811eef6cdd992f0dca1f35a49cd}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!info@{info}}
+\index{info@{info}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{info}{info}}
+{\footnotesize\ttfamily \label{class_vertex_a415d7811eef6cdd992f0dca1f35a49cd} 
+template$<$class T$>$ \\
+T \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+info\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Information stored in the vertex. 
+
+\Hypertarget{class_vertex_a35d937c418952520cfa26b098e86b755}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!low@{low}}
+\index{low@{low}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{low}{low}}
+{\footnotesize\ttfamily \label{class_vertex_a35d937c418952520cfa26b098e86b755} 
+template$<$class T$>$ \\
+int \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+low = -\/1\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{class_vertex_aeb941bcd51ef71c6101e02eaed1cae12}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!num@{num}}
+\index{num@{num}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{num}{num}}
+{\footnotesize\ttfamily \label{class_vertex_aeb941bcd51ef71c6101e02eaed1cae12} 
+template$<$class T$>$ \\
+int \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+num = -\/1\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Used by Tarjan\textquotesingle{}s SCC algorithm. 
+
+\Hypertarget{class_vertex_abfc6d8f64308c47901c72d5ebceda80e}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!path@{path}}
+\index{path@{path}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{path}{path}}
+{\footnotesize\ttfamily \label{class_vertex_abfc6d8f64308c47901c72d5ebceda80e} 
+template$<$class T$>$ \\
+\doxymbox{\hyperlink{class_edge}{Edge}}$<$T$>$\texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+path = nullptr\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Path pointer for shortest path algorithms. 
+
+\Hypertarget{class_vertex_ae575d4b9a6b1ada3f9626c458c060f54}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!processing@{processing}}
+\index{processing@{processing}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{processing}{processing}}
+{\footnotesize\ttfamily \label{class_vertex_ae575d4b9a6b1ada3f9626c458c060f54} 
+template$<$class T$>$ \\
+bool \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+processing = false\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Used by is\+DAG. 
+
+\Hypertarget{class_vertex_a721ab622207a73c5fae7b9abad6c07cc}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!queueIndex@{queueIndex}}
+\index{queueIndex@{queueIndex}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{queueIndex}{queueIndex}}
+{\footnotesize\ttfamily \label{class_vertex_a721ab622207a73c5fae7b9abad6c07cc} 
+template$<$class T$>$ \\
+int \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+queue\+Index = 0\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Required by Mutable\+Priority\+Queue and UFDS. 
+
+\Hypertarget{class_vertex_a187a2fe4ff50261cf3c15b8cda7dfc56}\index{Vertex$<$ T $>$@{Vertex$<$ T $>$}!visited@{visited}}
+\index{visited@{visited}!Vertex$<$ T $>$@{Vertex$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{visited}{visited}}
+{\footnotesize\ttfamily \label{class_vertex_a187a2fe4ff50261cf3c15b8cda7dfc56} 
+template$<$class T$>$ \\
+bool \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$::\+visited = false\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Used by DFS, BFS, Prim, etc. 
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+include/\+\doxymbox{\hyperlink{_graph_8h}{Graph.\+h}}\end{DoxyCompactItemize}

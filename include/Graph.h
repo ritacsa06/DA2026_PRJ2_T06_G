@@ -26,14 +26,14 @@ class Vertex {
 public:
     /**
      * @brief Constructs a new Vertex with the given information.
-     * * <b>Time Complexity:</b> O(1).
+     * <b>Time Complexity:</b> O(1).
      * @param in The information/content of the vertex.
      */
     Vertex(T in);
 
     /**
      * @brief Compares this vertex with another based on distance.
-     * * <b>Time Complexity:</b> O(1).
+     * <b>Time Complexity:</b> O(1).
      * @param vertex The other vertex to compare against.
      * @return True if this vertex's distance is less than the other's.
      */
@@ -64,7 +64,7 @@ public:
 
     /**
      * @brief Adds an outgoing edge from this vertex to a destination vertex.
-     * * <b>Time Complexity:</b> O(1).
+     * <b>Time Complexity:</b> O(1).
      * @param dest Pointer to the destination vertex.
      * @param w Weight of the edge.
      * @return Pointer to the newly created edge.
@@ -73,7 +73,7 @@ public:
 
     /**
      * @brief Removes an outgoing edge targeting a specific content.
-     * * <b>Time Complexity:</b> O(E_out), where E_out is the number of outgoing edges from this vertex.
+     * <b>Time Complexity:</b> O(E_out), where E_out is the number of outgoing edges from this vertex.
      * @param in The content of the destination vertex to remove the edge to.
      * @return True if the edge was found and removed, false otherwise.
      */
@@ -81,7 +81,7 @@ public:
 
     /**
      * @brief Removes all outgoing edges from this vertex.
-     * * <b>Time Complexity:</b> O(E_out), where E_out is the number of outgoing edges.
+     * <b>Time Complexity:</b> O(E_out), where E_out is the number of outgoing edges.
      */
     void removeOutgoingEdges();
 
@@ -120,7 +120,7 @@ class Edge {
 public:
     /**
      * @brief Constructs an edge between an origin and destination vertex.
-     * * <b>Time Complexity:</b> O(1).
+     * <b>Time Complexity:</b> O(1).
      * @param orig Pointer to the origin vertex.
      * @param dest Pointer to the destination vertex.
      * @param w Weight of the edge.
@@ -161,13 +161,13 @@ class Graph {
 public:
     /**
      * @brief Graph destructor. Cleans up dynamically allocated matrices and vertices.
-     * * <b>Time Complexity:</b> O(V + E), where V is the number of vertices and E is the number of edges.
+     * <b>Time Complexity:</b> O(V + E), where V is the number of vertices and E is the number of edges.
      */
     ~Graph();
 
     /**
      * @brief Finds a vertex with the given content.
-     * * <b>Time Complexity:</b> O(V), where V is the number of vertices.
+     * <b>Time Complexity:</b> O(V), where V is the number of vertices.
      * @param in The content to search for.
      * @return Pointer to the found vertex, or nullptr if not found.
      */
@@ -175,7 +175,7 @@ public:
 
     /**
      * @brief Adds a new vertex to the graph.
-     * * <b>Time Complexity:</b> O(V) due to the existence check.
+     * <b>Time Complexity:</b> O(V) due to the existence check.
      * @param in The content of the new vertex.
      * @return True if successful, false if a vertex with that content already exists.
      */
@@ -183,7 +183,7 @@ public:
 
     /**
      * @brief Removes a vertex and all its incoming/outgoing edges.
-     * * <b>Time Complexity:</b> O(V + E), where V is the number of vertices and E is the number of edges.
+     * <b>Time Complexity:</b> O(V + E), where V is the number of vertices and E is the number of edges.
      * @param in The content of the vertex to remove.
      * @return True if successfully removed, false if the vertex does not exist.
      */
@@ -191,7 +191,7 @@ public:
 
     /**
      * @brief Adds a directed edge between two vertices.
-     * * <b>Time Complexity:</b> O(V) to locate both vertices.
+     * <b>Time Complexity:</b> O(V) to locate both vertices.
      * @param sourc The content of the source vertex.
      * @param dest The content of the destination vertex.
      * @param w Weight of the new edge.
@@ -201,7 +201,7 @@ public:
 
     /**
      * @brief Removes an edge from the graph.
-     * * <b>Time Complexity:</b> O(V + E_out) where E_out is the out-degree of the source vertex.
+     * <b>Time Complexity:</b> O(V + E_out) where E_out is the out-degree of the source vertex.
      * @param sourc The content of the source vertex.
      * @param dest The content of the destination vertex.
      * @return True if successful, false if the edge or source vertex does not exist.
@@ -210,7 +210,7 @@ public:
 
     /**
      * @brief Adds a bidirectional edge between two vertices (two directed edges).
-     * * <b>Time Complexity:</b> O(V) to locate both vertices.
+     * <b>Time Complexity:</b> O(V) to locate both vertices.
      * @param sourc The content of one vertex.
      * @param dest The content of the other vertex.
      * @param w Weight of both edges.
@@ -229,7 +229,7 @@ protected:
 
     /**
      * @brief Finds the index of the vertex with a given content.
-     * * <b>Time Complexity:</b> O(V).
+     * <b>Time Complexity:</b> O(V).
      * @param in The content to search for.
      * @return The index of the vertex, or -1 if not found.
      */

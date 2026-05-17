@@ -13,7 +13,7 @@ static constexpr int NO_REGISTER = -1;
 
 /**
  * @brief Represents a live range or a merged set of live ranges for a variable.
- * * @details A Web tracks the exact program points where a specific variable is active.
+ * @details A Web tracks the exact program points where a specific variable is active.
  * It is used as the foundational vertex information inside the interference graph.
  */
 struct Web {
@@ -28,7 +28,7 @@ struct Web {
 
     /**
      * @brief Equality operator to compare two webs based on their unique ID.
-     * * <b>Time Complexity:</b> O(1).
+     * <b>Time Complexity:</b> O(1).
      * @param other The other web to compare against.
      * @return True if both webs have the same ID.
      */
@@ -39,11 +39,11 @@ struct Web {
 
 /**
  * @brief Global inline function to determine if two webs interfere.
- * * @details Two webs interfere if they share at least one active program point. 
+ * @details Two webs interfere if they share at least one active program point. 
  * However, if they intersect at a point where one web exactly ends (last use) 
  * and the other exactly begins (definition), they do not interfere at that specific point.
- * * <b>Time Complexity:</b> O(L_1 + L_2), where L_1 and L_2 are the number of active lines in w1 and w2 respectively, driven by `std::set_intersection`.
- * * @param w1 The first web.
+ * <b>Time Complexity:</b> O(L_1 + L_2), where L_1 and L_2 are the number of active lines in w1 and w2 respectively, driven by `std::set_intersection`.
+ * @param w1 The first web.
  * @param w2 The second web.
  * @return True if there is a conflict (interference) between the two webs, false otherwise.
  */
